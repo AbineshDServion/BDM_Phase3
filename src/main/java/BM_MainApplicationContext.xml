@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:oxm="http://www.springframework.org/schema/oxm" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+                        http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+                        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.1.xsd">
+
+
+	<!-- @Configurable/@Autowired Support -->
+	<context:annotation-config />
+
+	<context:component-scan base-package="com.servion" />
+	<aop:aspectj-autoproxy />
+
+	<bean id="checkCallInfoAspect" class="com.servion.aspects.CheckCallInfoAspect" />
+	
+
+	<!-- Import WebServices -->
+	<import resource="classpath:DAOContext.xml" />
+
+
+	<!-- <bean id="propertyConfigurer" -->
+	<!-- class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> -->
+	<!-- <property name="locations"> -->
+	<!-- <list> -->
+	<!-- <value>classpath:HostProperty/BeneficiaryDtlsInquiry.properties -->
+	<!-- </value> -->
+	<!-- <value>classpath:HostProperty/BeneficiaryRegst.properties</value> -->
+	<!-- <value>classpath:HostProperty/CCAcctStmtInq.properties</value> -->
+	<!-- <value>classpath:HostProperty/CCEntityInquiry.properties</value> -->
+	<!-- <value>classpath:HostProperty/CreditCardGroupInquiry.properties</value> -->
+	<!-- <value>classpath:HostProperty/CCPayment.properties</value> -->
+	<!-- <value>classpath:HostProperty/CCtxnPostRq.properties</value> -->
+	<!-- <value>classpath:HostProperty/ChqBookOrder.properties</value> -->
+	<!-- <value>classpath:HostProperty/CustomerProfileAggregate.properties</value> -->
+	<!-- <value>classpath:HostProperty/DebitCardServiceRequest.properties</value> -->
+	<!-- <value>classpath:HostProperty/DepositDtlsInq.properties</value> -->
+	<!-- <value>classpath:HostProperty/ExchngRateInq.properties</value> -->
+	<!-- <value>classpath:HostProperty/FundsTransferRemitt.properties</value> -->
+	<!-- <value>classpath:HostProperty/FundTransferIntra.properties</value> -->
+	<!-- <value>classpath:HostProperty/GetCallData.properties</value> -->
+	<!-- <value>classpath:HostProperty/GetDebitCardDetails.properties</value> -->
+	<!-- <value>classpath:HostProperty/LastNNumTransInq.properties</value> -->
+	<!-- <value>classpath:HostProperty/ListBeneficiary.properties</value> -->
+	<!-- <value>classpath:HostProperty/LoanDtlsInquiry.properties</value> -->
+	<!-- <value>classpath:HostProperty/SendFax.properties</value> -->
+	<!-- <value>classpath:HostProperty/SendForm.properties</value> -->
+	<!-- <value>classpath:HostProperty/SetCallData.properties</value> -->
+	<!-- <value>classpath:HostProperty/SMSNotification.properties</value> -->
+	<!-- <value>classpath:HostProperty/UtilityBillPaymentCC.properties</value> -->
+	<!-- <value>classpath:HostProperty/UtilityBillPayment.properties</value> -->
+	<!-- <value>classpath:HostProperty/ValidateDebitCardPin.properties -->
+	<!-- </value> -->
+	<!-- </list> -->
+	<!-- </property> -->
+	<!-- </bean> -->
+
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<!-- <value>classpath:DynaPhraseProperty/dynaphrase_en</value> -->
+				<!-- <value>classpath:DynaPhraseProperty/dynaphrase_ar_AE</value> -->
+				<!-- <value>classpath:DynaPhraseProperty/dynaphrase_hi_IN</value> -->
+				<value>dynaphrase_en</value>
+				<value>dynaphrase_ar</value>
+				<value>dynaphrase_hi_IN</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Define Service Beans -->
+
+	<bean id="holder" class="com.servion.context.HolderBean" />
+	
+	
+			
+	<bean id="iRapCTI" class="com.servion.services.RapCTIImpl">
+		<beans:property name="getCallDataDAO" ref="getCallDataDAO" />
+		<beans:property name="setCallDataDAO" ref="setCallDataDAO" />
+	</bean>
+	
+	
+	<bean id="IWriteFax" class="com.servion.services.WriteFaxImpl">
+	</bean>
+			
+	
+	<bean id="iAccountBalance" class="com.servion.services.AccountBalanceImpl">
+		<beans:property name="acctDtlsInquiryDAO" ref="acctDtlsInquiryDAO" />
+	</bean>
+
+	<bean id="iAccountOrCardSelection" class="com.servion.services.AccountOrCardSelectionImpl" scope="prototype">
+	</bean>
+
+
+	<bean id="iAPINValidation" class="com.servion.services.APINValidationImpl" scope="prototype">
+		<beans:property name="validateDebitCardPinDAO" ref="validateDebitCardPinDAO" />
+		<beans:property name="ccEntityInquiryDAO" ref="ccEntityInquiryDAO" />
+		<beans:property name="keyExAuthDAO" ref="keyExAuthDAO" />
+	</bean>
+
+
+	<bean id="iBankingFlashBalance" class="com.servion.services.BankingFlashBalanceImpl">
+		<beans:property name="acctDtlsInquiryDAO" ref="acctDtlsInquiryDAO" />
+	</bean>
+
+
+	<bean id="iBirthDayGreeting" class="com.servion.services.BirthDayGreetingImpl">
+	</bean>
+
+
+	<bean id="iBlockCodeCheck" class="com.servion.services.BlockCodeCheckImpl">
+	</bean>
+
+
+	<bean id="iBranchAddress" class="com.servion.services.BranchAddressImpl">
+	</bean>
+
+
+	<bean id="iCallerIdentification" class="com.servion.services.CallerIdentificationImpl" scope="prototype">
+		<beans:property name="getDebitCardDetailsDAO" ref="getDebitCardDetailsDAO" />
+		<beans:property name="customerProfileAggregateDAO" ref="customerProfileAggregateDAO" />
+		<beans:property name="custDtlsDAO" ref="custDtlsDAO" />
+	</bean>
+
+	<bean id="iCallerTransferOnAbandon" class="com.servion.services.CallerTransferOnAbandonImpl">
+	</bean>
+
+
+	<bean id="iCallInfoService" class="com.servion.services.CallInfoServiceImpl">
+	</bean>
+
+
+	<bean id="iCardBalance" class="com.servion.services.CardBalanceImpl">
+		<beans:property name="ccGroupInquiryDAO" ref="ccGroupInquiryDAO" />
+		<beans:property name="ccEntityInquiryDAO" ref="ccEntityInquiryDAO" />
+	</bean>
+
+	<bean id="iCardPaymentConfirmation" class="com.servion.services.CardPaymentConfirmationImpl" scope="prototype">
+		<beans:property name="ccPaymentDAO" ref="ccPaymentDAO" />
+		<beans:property name="cctxnPostRqDAO" ref="cctxnPostRqDAO" />
+	</bean>
+
+
+	<bean id="iCardPaymentInternal" class="com.servion.services.CardPaymentInternalImpl">
+		<beans:property name="ccEntityInquiryDAO" ref="ccEntityInquiryDAO" />
+		<beans:property name="ccGroupInquiryDAO" ref="ccGroupInquiryDAO" />
+	</bean>
+
+
+	<bean id="iCardPaymentThirdPartyWithinBM" class="com.servion.services.CardPaymentThirdPartyWithinBMImpl">
+		<beans:property name="listBeneficiaryDAO" ref="listBeneficiaryDAO" />
+		<beans:property name="beneficiaryDtlsInquiryDAO" ref="beneficiaryDtlsInquiryDAO" />
+	</bean>
+
+
+	<bean id="iChequeBookRequest" class="com.servion.services.ChequeBookRequestImpl" scope="prototype">
+		<beans:property name="chqBookOrderDAO" ref="chqBookOrderDAO" />
+	</bean>
+
+
+
+	<bean id="iCurrencyCalculator" class="com.servion.services.CurrencyCalculatorImpl">
+	</bean>
+
+
+	<bean id="iCustomerSegmentCheck" class="com.servion.services.CustomerSegmentCheckImpl">
+	</bean>
+
+	<bean id="iDebitCardActivation" class="com.servion.services.DebitCardActivationImpl">
+		<beans:property name="debitCardServiceRequestDAO" ref="debitCardServiceRequestDAO" />
+	</bean>
+
+
+	<bean id="iEnterAmount" class="com.servion.services.EnterAmountImpl">
+	</bean>
+
+	<bean id="iEnterDebitOrCreditCardNo" class="com.servion.services.EnterDebitOrCreditCardNoImpl" scope="prototype">
+		<beans:property name="getDebitCardDetailsDAO" ref="getDebitCardDetailsDAO" />
+		<beans:property name="customerProfileAggregateDAO" ref="customerProfileAggregateDAO" />
+	</bean>
+
+	<bean id="iErrorCode" class="com.servion.services.ErrorCodeImpl">
+	</bean>
+
+
+	<bean id="iExchangeRates" class="com.servion.services.ExchangeRatesImpl">
+		<beans:property name="exchngRateInqDAO" ref="exchngRateInqDAO" />
+	</bean>
+
+
+	<bean id="iFax" class="com.servion.services.FaxImpl">
+		<beans:property name="sendFaxDAO" ref="sendFaxDAO" />
+	</bean>
+
+
+	<bean id="iFDBalance" class="com.servion.services.FDBalanceImpl">
+		<beans:property name="depositDtlsInqDAO" ref="depositDtlsInqDAO" />
+	</bean>
+
+
+	<bean id="iFixedDepositRates" class="com.servion.services.FixedDepositRatesImpl">
+	<beans:property name="depositDtlsInqDAO" ref="depositDtlsInqDAO" />
+	</bean>
+
+
+	<bean id="iForms" class="com.servion.services.Forms">
+	</bean>
+
+
+	<bean id="iFundsTransferCharity" class="com.servion.services.FundsTransferCharityImpl">
+		<beans:property name="listBeneficiaryDAO" ref="listBeneficiaryDAO" />
+		<beans:property name="beneficiaryDtlsInquiryDAO" ref="beneficiaryDtlsInquiryDAO" />
+	</bean>
+
+	<bean id="iFundsTransferConfirmation" class="com.servion.services.FundsTransferConfirmationImpl" scope="prototype">
+		<beans:property name="exchngRateInqDAO" ref="exchngRateInqDAO" />
+		<beans:property name="fundTransferIntraDAO" ref="fundTransferIntraDAO" />
+		<beans:property name="fundsTransferRemittDAO" ref="fundsTransferRemittDAO" />
+				<beans:property name="utilityBillPaymentDAO" ref="utilityBillPaymentDAO" />
+	</bean>
+
+
+	<bean id="iFundsTransferInternal" class="com.servion.services.FundsTransferInternalImpl" scope="prototype">
+	</bean>
+
+	<bean id="iFundsTransferThirdPartyOutsideBM"
+		class="com.servion.services.FundsTransferThirdPartyOutsideBMImpl">
+		<beans:property name="listBeneficiaryDAO" ref="listBeneficiaryDAO" />
+		<beans:property name="beneficiaryDtlsInquiryDAO" ref="beneficiaryDtlsInquiryDAO" />
+	</bean>
+
+	<bean id="iFundsTransferThirdPartyWithinBM"
+		class="com.servion.services.FundsTransferThirdPartyWithinBMImpl" scope="prototype">
+		<beans:property name="listBeneficiaryDAO" ref="listBeneficiaryDAO" />
+		<beans:property name="beneficiaryDtlsInquiryDAO" ref="beneficiaryDtlsInquiryDAO" />
+
+	</bean>
+
+
+	<bean id="iGenderBasedMessages" class="com.servion.services.GenderBasedMessagesImpl">
+	</bean>
+
+
+	<bean id="iGlobal" class="com.servion.services.GlobalImpl">
+	</bean>
+
+
+	<bean id="iGreetingMessage" class="com.servion.services.GreetingMessageImpl" scope="prototype">
+	</bean>
+
+
+	<bean id="iHardByPass" class="com.servion.services.HardByPassImpl">
+	</bean>
+
+
+	<bean id="iLanguageSelection" class="com.servion.services.LanguageSelectionImpl" scope="prototype">
+	</bean>
+
+
+	<bean id="iLoanBalance" class="com.servion.services.LoanBalanceImpl">
+	<beans:property name="loanDtlsInquiryDAO" ref="loanDtlsInquiryDAO" />
+	</bean>
+
+	<bean id="iOTPGeneration" class="com.servion.services.OTPGenerationImpl">
+	</bean>
+
+
+	<bean id="iOTPValidation" class="com.servion.services.OTPValidationImpl">
+	</bean>
+
+	<bean id="iPayeeRegistration" class="com.servion.services.PayeeRegistrationImpl" scope="prototype">
+		<beans:property name="beneficiaryRegstDAO" ref="beneficiaryRegstDAO" />
+	</bean>
+
+	<bean id="iProductInformation" class="com.servion.services.ProductInformationImpl">
+	</bean>
+
+
+	<bean id="iPromotionalAlert" class="com.servion.services.PromotionalAlertImpl">
+	</bean>
+
+
+	<bean id="iPromotions" class="com.servion.services.PromotionsImpl">
+	</bean>
+
+
+	<bean id="iRecentTransactionBank" class="com.servion.services.RecentTransactionBankImpl">
+		<beans:property name="lastNNumTransInquiryDAO" ref="lastNNumTransInquiryDAO" />
+	</bean>
+
+
+	<bean id="iRecentTransactionCards" class="com.servion.services.RecentTransactionCardsImpl" scope="prototype">
+		<beans:property name="ccAcctStmtInqDAO" ref="ccAcctStmtInqDAO" />
+	</bean>
+
+	<bean id="iSelfService" class="com.servion.services.SelfServiceImpl">
+	</bean>
+
+	<bean id="iSendSMS" class="com.servion.services.SendSMSImpl" scope="prototype">
+		<beans:property name="sMSNotificationDAO" ref="sMSNotificationDAO" />
+	</bean>
+
+
+	<bean id="iSoftByPass" class="com.servion.services.SoftByPassImpl">
+	</bean>
+
+	<bean id="iTeaser" class="com.servion.services.TeaserImpl">
+	</bean>
+
+
+	<bean id="iTenureAlert" class="com.servion.services.TenureAlertImpl">
+	</bean>
+
+	<bean id="iThirdPartyRemittance" class="com.servion.services.ThirdPartyRemittanceImpl">
+		<beans:property name="listBeneficiaryDAO" ref="listBeneficiaryDAO" />
+		<beans:property name="beneficiaryDtlsInquiryDAO" ref="beneficiaryDtlsInquiryDAO" />
+		<beans:property name="exchngRateInqDAO" ref="exchngRateInqDAO" />
+		<beans:property name="fundsTransferRemittDAO" ref="fundsTransferRemittDAO" />
+	</bean>
+
+
+	<bean id="iTransactionDetailsBank" class="com.servion.services.TransactionDetailsBankImpl">
+		<beans:property name="lastNNumTransInquiryDAO" ref="lastNNumTransInquiryDAO" />
+		<!-- <beans:property name="sendForm" ref="sendForm" /> -->
+	</bean>
+
+	<bean id="iTransactionDetailsCards" class="com.servion.services.TransactionDetailsCardsImpl">
+		<beans:property name="ccAcctStmtInqDAO" ref="ccAcctStmtInqDAO" />
+	</bean>
+
+
+	<bean id="iTransferToAgent" class="com.servion.services.TransferToAgentImpl">
+	</bean>
+
+	<bean id="iUtilityBillPaymentConfirmation" class="com.servion.services.UtilityBillPaymentConfirmationImpl" scope="prototype">
+		<beans:property name="utilityBillPaymentDAO" ref="utilityBillPaymentDAO" />
+		<beans:property name="utilityBillPaymentCCDAO" ref="utilityBillPaymentCCDAO" />
+
+	</bean>
+
+
+	<bean id="iUtilityBillPaymentElectricity" class="com.servion.services.UtilityBillPaymentElectricityImpl">
+		<beans:property name="listBeneficiaryDAO" ref="listBeneficiaryDAO" />
+		<beans:property name="beneficiaryDtlsInquiryDAO" ref="beneficiaryDtlsInquiryDAO" />
+		<beans:property name="utilitySubscriberInfoDAO" ref="utilitySubscriberInfoDAO" />
+	</bean>
+
+	<bean id="iUtilityBillPaymentMobLandIntr" class="com.servion.services.UtilityBillPaymentMobLandIntrImpl">
+		<beans:property name="listBeneficiaryDAO" ref="listBeneficiaryDAO" />
+		<beans:property name="beneficiaryDtlsInquiryDAO" ref="beneficiaryDtlsInquiryDAO" />
+		<beans:property name="telecomPostpaidBalanceDetailsDAO" ref="telecomPostpaidBalanceDetailsDAO" />
+		<beans:property name="telecomCustomerInfoDAO" ref="telecomCustomerInfoDAO" />
+		<beans:property name="telecomSubscriberInfoDAO" ref="telecomSubscriberInfoDAO" />
+	</bean>
+
+	<bean id="iUtilityBillPaymentSchoolFee" class="com.servion.services.UtilityBillPaymentSchoolFeeImpl">
+		<beans:property name="listBeneficiaryDAO" ref="listBeneficiaryDAO" />
+		<beans:property name="beneficiaryDtlsInquiryDAO" ref="beneficiaryDtlsInquiryDAO" />
+
+	</bean>
+
+	<bean id="iUtilityBillPaymentTopUp" class="com.servion.services.UtilityBillPaymentTopUpImpl">
+		<beans:property name="telecomSubscriberInfoDAO" ref="telecomSubscriberInfoDAO" />
+		<beans:property name="telecomPrepaidNumberValDAO" ref="telecomPrepaidNumberValDAO" />
+	</bean>
+	
+	<bean id="iUtilityBillPaymentWater" class="com.servion.services.UtilityBillPaymentWaterImpl">
+		<beans:property name="listBeneficiaryDAO" ref="listBeneficiaryDAO" />
+		<beans:property name="beneficiaryDtlsInquiryDAO" ref="beneficiaryDtlsInquiryDAO" />
+		<beans:property name="utilitySubscriberInfoDAO" ref="utilitySubscriberInfoDAO" />
+	</bean>
+
+	<bean id="iValidAccounts" class="com.servion.services.ValidAccountsImpl">
+	</bean>
+
+
+	<bean id="iWelcomeMessage" class="com.servion.services.WelcomeMessageImpl" scope="prototype">
+	</bean>
+
+	<bean id="iReportLossCard" class="com.servion.services.ReportLossCardImpl" scope="prototype">
+		<beans:property name="debitCardServiceRequestDAO" ref="debitCardServiceRequestDAO" />
+	</bean>
+	
+	<bean id="lastNNumTransInquiryDAO" class="com.servion.dao.impl.LastNNumTransInquiryDAOImpl">
+	</bean>
+	
+		<bean id="acctDtlsInquiryDAO" class="com.servion.dao.impl.AcctDtlsInquiryDAOImpl">
+	</bean>
+
+	<bean id="beneficiaryDtlsInquiryDAO" class="com.servion.dao.impl.BeneficiaryDtlsInquiryDAOImpl">
+	</bean>
+
+	<bean id="beneficiaryRegstDAO" class="com.servion.dao.impl.BeneficiaryRegstDAOImpl">
+	</bean>
+
+	<bean id="ccAcctStmtInqDAO" class="com.servion.dao.impl.CCAcctStmtInqDAOImpl">
+	</bean>
+
+	<bean id="ccEntityInquiryDAO" class="com.servion.dao.impl.CCEntityInquiryDAOImpl">
+	</bean>
+
+	<bean id="ccGroupInquiryDAO" class="com.servion.dao.impl.CCGroupInquiryDAOImpl">
+	</bean>
+
+	<bean id="ccPaymentDAO" class="com.servion.dao.impl.CCPaymentDAOImpl">
+	</bean>
+
+	<bean id="cctxnPostRqDAO" class="com.servion.dao.impl.CCtxnPostRqDAOImpl">
+	</bean>
+
+	<bean id="chqBookOrderDAO" class="com.servion.dao.impl.ChqBookOrderDAOImpl">
+	</bean>
+
+	<bean id="customerProfileAggregateDAO" class="com.servion.dao.impl.CustomerProfileAggregateDAOImpl">
+	</bean>
+
+	<bean id="debitCardServiceRequestDAO" class="com.servion.dao.impl.DebitCardServiceRequestDAOImpl">
+	</bean>
+
+	<bean id="depositDtlsInqDAO" class="com.servion.dao.impl.DepositDtlsInqDAOImpl">
+	</bean>
+
+	<bean id="exchngRateInqDAO" class="com.servion.dao.impl.ExchngRateInqDAOImpl">
+	</bean>
+
+	<bean id="fundsTransferRemittDAO" class="com.servion.dao.impl.FundsTransferRemittDAOImpl">
+	</bean>
+
+	<bean id="fundTransferIntraDAO" class="com.servion.dao.impl.FundTransferIntraDAOImpl">
+	</bean>
+
+	<bean id="getCallDataDAO" class="com.servion.dao.impl.GetCallDataDAOImpl">
+	</bean>
+
+	<bean id="getDebitCardDetailsDAO" class="com.servion.dao.impl.GetDebitCardDetailsDAOImpl">
+	<!--<beans:property name="getDebitCardDetailsService" ref="getDebitCardDetailsService" /> -->
+	</bean>
+
+	<bean id="listBeneficiaryDAO" class="com.servion.dao.impl.ListBeneficiaryDAOImpl">
+	</bean>
+
+	<bean id="loanDtlsInquiryDAO" class="com.servion.dao.impl.LoanDtlsInquiryDAOImpl">
+	</bean>
+
+	<bean id="sendFaxDAO" class="com.servion.dao.impl.SendFaxDAOImpl">
+	</bean>
+
+	<bean id="setCallDataDAO" class="com.servion.dao.impl.SetCallDataDAOImpl">
+	</bean>
+
+	<bean id="sMSNotificationDAO" class="com.servion.dao.impl.SMSNotificationDAOImpl">
+	</bean>
+
+	<bean id="utilityBillPaymentCCDAO" class="com.servion.dao.impl.UtilityBillPaymentCCDAOImpl">
+	</bean>
+
+	<bean id="utilityBillPaymentDAO" class="com.servion.dao.impl.UtilityBillPaymentDAOImpl">
+	</bean>
+
+	<bean id="validateDebitCardPinDAO" class="com.servion.dao.impl.ValidateDebitCardPinDAOImpl">
+	</bean>
+	
+	<bean id="keyExAuthDAO" class="com.servion.dao.impl.KeyExAuthDAOImpl">
+	</bean>
+	
+	<bean id="telecomSubscriberInfoDAO" class="com.servion.dao.impl.TelecomSubscriberInfoDAOImpl">
+	</bean>
+	
+	<bean id="utilitySubscriberInfoDAO" class="com.servion.dao.impl.UtilitySubscriberInfoDAOImpl">
+	</bean>
+	
+	
+	<bean id="telecomPostpaidBalanceDetailsDAO" class="com.servion.dao.impl.TelecomPostpaidBalanceDetailsDAOImpl">
+	</bean>
+	
+	<bean id="telecomPrepaidNumberValDAO" class="com.servion.dao.impl.TelecomPrepaidNumberValDAOImpl">
+	</bean>
+	
+	<bean id="telecomCustomerInfoDAO" class="com.servion.dao.impl.TelecomCustomerInfoDAOImpl">
+	</bean>
+	
+	<!-- Update PIN -->
+	<bean id="iUpdatePIN" class="com.servion.services.UpdatePINImpl" scope="prototype">
+                                <beans:property name="updatePinDAO" ref="updatePinDAO" />
+                                <beans:property name="ccEntityInquiryDAO" ref="ccEntityInquiryDAO" />
+                                <beans:property name="keyExAuthDAO" ref="keyExAuthDAO" />
+                </bean>
+                
+                
+                <bean id="updatePinDAO" class="com.servion.dao.impl.UpdatePinDAOImpl">
+                </bean>
+<!-- FetchCardServiceHistory -->
+				
+				<bean id="iFetchCardServiceHistory" class="com.servion.services.FetchCardServiceHistoryImpl">
+                <beans:property name="fetchCardServiceHistoryDAO" ref="fetchCardServiceHistoryDAO" />
+</bean>
+
+<bean id="fetchCardServiceHistoryDAO" class="com.servion.dao.impl.FetchCardServiceHistoryDAOImpl">
+</bean>
+
+<!-- GetCCCustDtls -->
+				
+				<bean id="iGetCCCustDtls" class="com.servion.services.GetCCCustDtlsImpl">
+                <beans:property name="getCCCustDtlsDAO" ref="getCCCustDtlsDAO" />
+</bean>
+
+<bean id="getCCCustDtlsDAO" class="com.servion.dao.impl.GetCCCustDtlsDAOImpl">
+</bean>
+
+<!-- GetDCCustDtls -->
+				
+				<bean id="iGetDCCustDtls" class="com.servion.services.GetDCCustDtlsImpl">
+                <beans:property name="getDCCustDtlsDAO" ref="getDCCustDtlsDAO" />
+</bean>
+
+<bean id="getDCCustDtlsDAO" class="com.servion.dao.impl.GetDCCustDtlsDAOImpl">
+</bean>
+
+
+	<bean id="fetchCaseListOrCountDAO" class="com.servion.dao.impl.FetchCaseListOrCountDAOImpl">
+	</bean>
+	<bean id="iComplaintAlert" class="com.servion.services.ComplaintAlertImpl">
+		<beans:property name="fetchCaseListOrCountDAO" ref="fetchCaseListOrCountDAO" />
+	</bean>
+	<bean id="custDtlsDAO" class="com.servion.dao.impl.CustDtlsDAOImpl">
+	</bean>
+	<bean id="customerShortUpdateDAO" class="com.servion.dao.impl.CustomerShortUpdateDAOImpl">
+	</bean>
+	<bean id="iMobileNumberChange" class="com.servion.services.MobileNumberChangeImpl">
+		<beans:property name="customerShortUpdateDAO" ref="customerShortUpdateDAO" />
+		<beans:property name="custDtlsDAO" ref="custDtlsDAO" />
+	</bean>
+</beans>

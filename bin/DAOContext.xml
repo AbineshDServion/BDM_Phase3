@@ -1,0 +1,3380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:oxm="http://www.springframework.org/schema/oxm" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+                        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.2.xsd">
+
+	<!-- ==================================================================================================================== -->
+	<!-- Marshaller definition -->
+	<!-- ==================================================================================================================== -->
+
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/GetDebitCardDetails.properties</value>
+				<value>classpath:/CustomerProfileAggregate.properties</value>
+				<value>classpath:/SetCallData.properties</value>
+				<value>classpath:/GetCallData.properties</value>
+				<value>classpath:/DebitCardServiceRequest.properties</value>
+				<value>classpath:/ValidateDbtCrdPIN.properties</value>
+				<value>classpath:/KeyExAuth.properties</value>
+				<value>classpath:/LoanDtlsInquiry.properties</value>
+				<value>classpath:/CCEntityInquiry.properties</value>
+				<value>classpath:/DepositDtlsInq.properties</value>
+				<value>classpath:/ChqBookOrder.properties</value>
+				<value>classpath:/LastNNumTransInq.properties</value>
+				<value>classpath:/BeneficiaryDetailsEnquiry.properties</value>
+				<value>classpath:/BeneficiaryListInqReq.properties</value>
+				<value>classpath:/UtilityBillPayment.properties</value>
+				<value>classpath:/UtilityBillPaymentCC.properties</value>
+				<value>classpath:/CCGroupInquiry.properties</value>
+				<value>classpath:/CCAcctStmtInq.properties</value>
+				<value>classpath:/SMSNotification.properties</value>
+				<value>classpath:/ExchgRateInq.properties</value>
+				<value>classpath:/XferFund.properties</value>
+				<value>classpath:/XferRemitt.properties</value>
+				<value>classpath:/CreditCardPayment.properties</value>
+				<value>classpath:/CCTxnPost.properties</value>
+				<value>classpath:/BeneficiaryRegistration.properties</value>
+				<value>classpath:/SendFax.properties</value>
+				<value>classpath:/AcctDtlsInquiry.properties</value>
+				<value>classpath:/TelecomSubscriberInfo.properties</value>
+				<value>classpath:/TelecomPostpaidBalanceDetails.properties</value>
+				<value>classpath:/UtilitySubscriberInfo.properties</value>
+				<value>classpath:/TelecomPrepaidNumberVal.properties</value>
+				<value>classpath:/TelecomCustomerInfo.properties</value>
+				<value>classpath:/UpdatePIN.properties</value>
+				<value>classpath:/FetchCardServiceHistory.properties</value>
+				<value>classpath:/GetDCCustDtls.properties</value>
+				<value>classpath:/GetCCCustDtls.properties</value>
+				<value>classpath:/FetchCaseListOrCount.properties</value>
+				<value>classpath:/CustDtls.properties</value> <!-- Added on July 28 2020 for EPIN registred mobile number ISD testing -->
+				<value>classpath:/CustomerShortUpdate.properties</value> <!-- Added on 21 Oct 2020 for Mobile Number Change -->
+			</list>
+		</property>
+	</bean>
+
+
+
+	<bean name="marshallGetDebitCardDetailsEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+	</bean>
+
+
+	<oxm:jaxb2-marshaller id="marshallGetDebitCardDetailsEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.GetDbtCrdDetailsReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.GetDbtCrdDetailsResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="getDebitCardDetailsmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="getDebitCardDetailsfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="getDebitCardDetailsEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="getDebitCardDetailsmessageFactory" />
+		<property name="marshaller" ref="marshallGetDebitCardDetailsEndpoint" />
+		<property name="unmarshaller" ref="marshallGetDebitCardDetailsEndpoint" />
+		<property name="faultMessageResolver" ref="getDebitCardDetailsfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${GetDebitCardDetails.ip.conn.time.out}" />
+				<property name="readTimeout" value="${GetDebitCardDetails.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${GetDebitCardDetails.ip.endpoint}" />
+	</beans:bean>
+
+	<!-- <beans:bean id="getDebitCardDetailsServiceDAO" -->
+	<!-- class="com.servion.ws.persistence.impl.GetDebitCardDetailsServiceDAOImpl"> -->
+
+	<!-- <property name="soapActionUrl" value="${ip.soap.action}" /> -->
+	<!-- </beans:bean> -->
+
+	<beans:bean id="getDebitCardDetailsEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="getDebitCardDetailsmessageFactory" />
+		<property name="marshaller" ref="marshallGetDebitCardDetailsEndpoint" />
+		<property name="unmarshaller" ref="marshallGetDebitCardDetailsEndpoint" />
+		<property name="faultMessageResolver" ref="getDebitCardDetailsfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${GetDebitCardDetails.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${GetDebitCardDetails.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${GetDebitCardDetails.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="getDebitCardDetailsServiceDAO"
+		class="com.servion.ws.persistence.impl.GetDebitCardDetailsServiceDAOImpl">
+		<property name="webServiceTemplate" ref="getDebitCardDetailsEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="getDebitCardDetailsEndpoint_2" />
+		<property name="soapActionUrl" value="${GetDebitCardDetails.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${GetDebitCardDetails.isToCallSecHost}" />
+	</beans:bean>
+
+	<bean name="ws_RequestHeader_GetDebitCardDetails" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${GetDebitCardDetails.requesterID}" />
+		<property name="serviceName" value="${GetDebitCardDetails.serviceName}" />
+		<property name="providerID" value="${GetDebitCardDetails.providerID}" />
+		<property name="terminalID" value="${GetDebitCardDetails.terminalID}" />
+		<property name="serviceVersionNo" value="${GetDebitCardDetails.serviceVersionNo}" />
+		<property name="logLevel" value="${GetDebitCardDetails.logLevel}" />
+	</bean>
+
+	<beans:bean id="getDebitCardDetailsService"
+		class="com.servion.ws.service.impl.GetDebitCardDetailsServiceImpl">
+		<property name="getDebitCardDetailsServiceDAO" ref="getDebitCardDetailsServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_GetDebitCardDetails" />
+	</beans:bean>
+
+
+
+	<!-- ************************** Customer Profile Aggregate ************************************ -->
+
+
+	<bean name="marshallCustomerProfileAggregateEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.customermgmtservice" />
+	</bean>
+
+
+	<oxm:jaxb2-marshaller id="marshallCustomerProfileAggregateEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.customermgmtservice.CustomerProfileAggregateReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.customermgmtservice.CustomerProfileAggregateResType" />
+	</oxm:jaxb2-marshaller>
+
+
+
+	<beans:bean id="customerProfileAggregatemessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="customerProfileAggregatefaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="customerProfileAggregateEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="customerProfileAggregatemessageFactory" />
+		<property name="marshaller" ref="marshallCustomerProfileAggregateEndpoint" />
+		<property name="unmarshaller" ref="marshallCustomerProfileAggregateEndpoint" />
+		<property name="faultMessageResolver" ref="customerProfileAggregatefaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout"
+					value="${CustomerProfileAggregate.ip.conn.time.out}" />
+				<property name="readTimeout"
+					value="${CustomerProfileAggregate.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CustomerProfileAggregate.ip.endpoint}" />
+	</beans:bean>
+
+
+
+	<!-- <beans:bean id="customerProfileAggregateServiceDAO" -->
+	<!-- class="com.servion.ws.persistence.impl.CustomerProfileAggregateServiceDAOImpl"> -->
+
+	<!-- <property name="soapActionUrl" value="${ip.soap.action}" /> -->
+	<!-- </beans:bean> -->
+
+
+
+	<beans:bean id="customerProfileAggregateEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="customerProfileAggregatemessageFactory" />
+		<property name="marshaller" ref="marshallCustomerProfileAggregateEndpoint" />
+		<property name="unmarshaller" ref="marshallCustomerProfileAggregateEndpoint" />
+		<property name="faultMessageResolver" ref="customerProfileAggregatefaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout"
+					value="${CustomerProfileAggregate.ip.conn.time.out.2}" />
+				<property name="readTimeout"
+					value="${CustomerProfileAggregate.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CustomerProfileAggregate.ip.endpoint.2}" />
+	</beans:bean>
+
+
+	<beans:bean id="customerProfileAggregateServiceDAO"
+		class="com.servion.ws.persistence.impl.CustomerProfileAggregateServiceDAOImpl">
+		<property name="webServiceTemplate" ref="customerProfileAggregateEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="customerProfileAggregateEndpoint_2" />
+		<property name="soapActionUrl" value="${CustomerProfileAggregate.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${CustomerProfileAggregate.isToCallSecHost}" />
+	</beans:bean>
+
+	<bean name="ws_RequestHeader_CustomerProfileAggregate" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${CustomerProfileAggregate.requesterID}" />
+		<property name="serviceName" value="${CustomerProfileAggregate.serviceName}" />
+		<property name="providerID" value="${CustomerProfileAggregate.providerID}" />
+		<property name="terminalID" value="${CustomerProfileAggregate.terminalID}" />
+		<property name="serviceVersionNo" value="${CustomerProfileAggregate.serviceVersionNo}" />
+		<property name="logLevel" value="${CustomerProfileAggregate.logLevel}" />
+	</bean>
+
+	<beans:bean id="customerProfileAggregateService"
+		class="com.servion.ws.service.impl.CustomerProfileAggregateServiceImpl">
+		<property name="customerProfileAggregateServiceDAO" ref="customerProfileAggregateServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_CustomerProfileAggregate" />
+	</beans:bean>
+
+
+
+	<!-- ******************************************Get Call Data ************************************** -->
+
+
+	<bean name="marshallGetCallDataEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="org.tempuri" />
+	</bean>
+
+
+	<oxm:jaxb2-marshaller id="marshallGetCallDataEndpoint">
+		<oxm:class-to-be-bound name="org.tempuri.GetCallData" />
+
+		<oxm:class-to-be-bound name="org.tempuri.GetCallDataResponse" />
+	</oxm:jaxb2-marshaller>
+
+
+
+	<beans:bean id="getCallDatamessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="getCallDatafaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="getCallDataEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="getCallDatamessageFactory" />
+		<property name="marshaller" ref="marshallGetCallDataEndpoint" />
+		<property name="unmarshaller" ref="marshallGetCallDataEndpoint" />
+		<property name="faultMessageResolver" ref="getCallDatafaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${GetCallData.ip.conn.time.out}" />
+				<property name="readTimeout" value="${GetCallData.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${GetCallData.ip.endpoint}" />
+	</beans:bean>
+
+
+
+	<beans:bean id="getCallDataEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="getCallDatamessageFactory" />
+		<property name="marshaller" ref="marshallGetCallDataEndpoint" />
+		<property name="unmarshaller" ref="marshallGetCallDataEndpoint" />
+		<property name="faultMessageResolver" ref="getCallDatafaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${GetCallData.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${GetCallData.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${GetCallData.ip.endpoint.2}" />
+	</beans:bean>
+
+
+	<beans:bean id="getCallDataServiceDAO"
+		class="com.servion.ws.persistence.impl.GetCallDataServiceDAOImpl">
+		<property name="webServiceTemplate" ref="getCallDataEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="getCallDataEndpoint_2" />
+		<property name="soapActionUrl" value="${GetCallData.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${GetCallData.isToCallSecHost}" />
+	</beans:bean>
+
+	<beans:bean id="getCallDataService"
+		class="com.servion.ws.service.impl.GetCallDataServiceImpl">
+		<property name="getCallDataServiceDAO" ref="getCallDataServiceDAO" />
+	</beans:bean>
+
+
+	<!-- ******************************************Set Call Data ************************************** -->
+
+	<bean name="marshallsetCallDataEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="org.tempuri" />
+	</bean>
+
+
+	<oxm:jaxb2-marshaller id="marshallsetCallDataEndpoint">
+		<oxm:class-to-be-bound name="org.tempuri.SetCallData" />
+
+		<oxm:class-to-be-bound name="org.tempuri.SetCallDataResponse" />
+	</oxm:jaxb2-marshaller>
+
+
+
+	<beans:bean id="setCallDatamessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_12" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="setCallDatafaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="setCallDataEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="setCallDatamessageFactory" />
+		<property name="marshaller" ref="marshallsetCallDataEndpoint" />
+		<property name="unmarshaller" ref="marshallsetCallDataEndpoint" />
+		<property name="faultMessageResolver" ref="setCallDatafaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${SetCallData.ip.conn.time.out}" />
+				<property name="readTimeout" value="${SetCallData.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${SetCallData.ip.endpoint}" />
+	</beans:bean>
+
+
+
+	<beans:bean id="setCallDataEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="setCallDatamessageFactory" />
+		<property name="marshaller" ref="marshallsetCallDataEndpoint" />
+		<property name="unmarshaller" ref="marshallsetCallDataEndpoint" />
+		<property name="faultMessageResolver" ref="setCallDatafaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${SetCallData.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${SetCallData.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${SetCallData.ip.endpoint.2}" />
+	</beans:bean>
+
+
+	<beans:bean id="setCallDataServiceDAO"
+		class="com.servion.ws.persistence.impl.SetCallDataServiceDAOImpl">
+		<property name="webServiceTemplate" ref="setCallDataEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="setCallDataEndpoint_2" />
+		<property name="soapActionUrl" value="${SetCallData.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${SetCallData.isToCallSecHost}" />
+	</beans:bean>
+
+	<beans:bean id="setCallDataService"
+		class="com.servion.ws.service.impl.SetCallDataServiceImpl">
+		<property name="setCallDataServiceDAO" ref="setCallDataServiceDAO" />
+	</beans:bean>
+
+
+
+
+	<!-- ******************************************DebitCardServiceRequest ************************************** -->
+
+	<bean name="marshallDebitCardServiceRequestEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+	</bean>
+
+
+	<oxm:jaxb2-marshaller id="marshallDebitCardServiceRequestEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.DbtCrdSvcReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.DbtCrdSvcResType" />
+	</oxm:jaxb2-marshaller>
+
+
+
+	<beans:bean id="debitCardServiceRequestmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="debitCardServiceRequestfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="debitCardServiceRequestEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="debitCardServiceRequestmessageFactory" />
+		<property name="marshaller" ref="marshallDebitCardServiceRequestEndpoint" />
+		<property name="unmarshaller" ref="marshallDebitCardServiceRequestEndpoint" />
+		<property name="faultMessageResolver" ref="debitCardServiceRequestfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout"
+					value="${DebitCardServiceRequest.ip.conn.time.out}" />
+				<property name="readTimeout"
+					value="${DebitCardServiceRequest.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${DebitCardServiceRequest.ip.endpoint}" />
+	</beans:bean>
+
+
+	<beans:bean id="debitCardServiceRequestEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="debitCardServiceRequestmessageFactory" />
+		<property name="marshaller" ref="marshallDebitCardServiceRequestEndpoint" />
+		<property name="unmarshaller" ref="marshallDebitCardServiceRequestEndpoint" />
+		<property name="faultMessageResolver" ref="debitCardServiceRequestfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout"
+					value="${DebitCardServiceRequest.ip.conn.time.out.2}" />
+				<property name="readTimeout"
+					value="${DebitCardServiceRequest.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${DebitCardServiceRequest.ip.endpoint.2}" />
+	</beans:bean>
+
+
+	<beans:bean id="debitCardServiceRequestServiceDAO"
+		class="com.servion.ws.persistence.impl.DebitCardServiceRequestServiceDAOImpl">
+		<property name="webServiceTemplate" ref="debitCardServiceRequestEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="debitCardServiceRequestEndpoint_2" />
+		<property name="soapActionUrl" value="${DebitCardServiceRequest.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${DebitCardServiceRequest.isToCallSecHost}" />
+	</beans:bean>
+
+	<bean name="ws_RequestHeader_DebitCardServiceRequest" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${DebitCardServiceRequest.requesterID}" />
+		<property name="serviceName" value="${DebitCardServiceRequest.serviceName}" />
+		<property name="providerID" value="${DebitCardServiceRequest.providerID}" />
+				<property name="terminalID" value="${DebitCardServiceRequest.terminalID}" />
+		<property name="serviceVersionNo" value="${DebitCardServiceRequest.serviceVersionNo}" />
+		<property name="logLevel" value="${DebitCardServiceRequest.logLevel}" />
+	</bean>
+
+	<beans:bean id="debitCardServiceRequestService"
+		class="com.servion.ws.service.impl.DebitCardServiceRequestServiceImpl">
+		<property name="debitCardServiceRequestServiceDAO" ref="debitCardServiceRequestServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_DebitCardServiceRequest" />
+	</beans:bean>
+
+
+
+	<!-- ************************** ValidateDbtCrdPIN ************************************ -->
+
+
+	<bean name="marshallValidateDbtCrdPINEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+	</bean>
+
+
+	<oxm:jaxb2-marshaller id="marshallValidateDbtCrdPINEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.ValidateDbtCrdPinReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.ValidateDbtCrdPinResType" />
+	</oxm:jaxb2-marshaller>
+
+
+
+	<beans:bean id="validateDbtCrdPINmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="validateDbtCrdPINfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="validateDbtCrdPINEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="validateDbtCrdPINmessageFactory" />
+		<property name="marshaller" ref="marshallValidateDbtCrdPINEndpoint" />
+		<property name="unmarshaller" ref="marshallValidateDbtCrdPINEndpoint" />
+		<property name="faultMessageResolver" ref="validateDbtCrdPINfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${ValidateDbtCrdPIN.ip.conn.time.out}" />
+				<property name="readTimeout" value="${ValidateDbtCrdPIN.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${ValidateDbtCrdPIN.ip.endpoint}" />
+	</beans:bean>
+
+
+	<beans:bean id="validateDbtCrdPINEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="validateDbtCrdPINmessageFactory" />
+		<property name="marshaller" ref="marshallValidateDbtCrdPINEndpoint" />
+		<property name="unmarshaller" ref="marshallValidateDbtCrdPINEndpoint" />
+		<property name="faultMessageResolver" ref="validateDbtCrdPINfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${ValidateDbtCrdPIN.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${ValidateDbtCrdPIN.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${ValidateDbtCrdPIN.ip.endpoint.2}" />
+	</beans:bean>
+
+
+	<beans:bean id="validateDebitCardPinServiceDAO"
+		class="com.servion.ws.persistence.impl.ValidateDebitCardPinServiceDAOImpl">
+		<property name="webServiceTemplate" ref="validateDbtCrdPINEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="validateDbtCrdPINEndpoint_2" />
+		<property name="soapActionUrl" value="${ValidateDbtCrdPIN.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${ValidateDbtCrdPIN.isToCallSecHost}" />
+	</beans:bean>
+	
+	
+	<bean name="ws_RequestHeader_ValidateDbtCrdPIN" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${ValidateDbtCrdPIN.requesterID}" />
+		<property name="serviceName" value="${ValidateDbtCrdPIN.serviceName}" />
+		<property name="providerID" value="${ValidateDbtCrdPIN.providerID}" />
+						<property name="terminalID" value="${ValidateDbtCrdPIN.terminalID}" />
+		<property name="serviceVersionNo" value="${ValidateDbtCrdPIN.serviceVersionNo}" />
+		<property name="logLevel" value="${ValidateDbtCrdPIN.logLevel}" />
+	</bean>
+
+	<beans:bean id="validateDebitCardPinService"
+		class="com.servion.ws.service.impl.ValidateDebitCardPinServiceImpl">
+		<property name="validateDebitCardPinServiceDAO" ref="validateDebitCardPinServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_ValidateDbtCrdPIN" />
+	</beans:bean>
+
+
+
+	<!-- ************************** KeyExAuth ************************************ -->
+
+
+	<bean name="marshallKeyExAuthEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+	</bean>
+
+
+	<oxm:jaxb2-marshaller id="marshallKeyExAuthEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.KeyExAuthReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.KeyExAuthResType" />
+	</oxm:jaxb2-marshaller>
+
+
+
+	<beans:bean id="keyExAuthmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="keyExAuthfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="keyExAuthEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="keyExAuthmessageFactory" />
+		<property name="marshaller" ref="marshallKeyExAuthEndpoint" />
+		<property name="unmarshaller" ref="marshallKeyExAuthEndpoint" />
+		<property name="faultMessageResolver" ref="keyExAuthfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${KeyExAuth.ip.conn.time.out}" />
+				<property name="readTimeout" value="${KeyExAuth.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${KeyExAuth.ip.endpoint}" />
+	</beans:bean>
+
+
+	<beans:bean id="keyExAuthEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="keyExAuthmessageFactory" />
+		<property name="marshaller" ref="marshallKeyExAuthEndpoint" />
+		<property name="unmarshaller" ref="marshallKeyExAuthEndpoint" />
+		<property name="faultMessageResolver" ref="keyExAuthfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${KeyExAuth.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${KeyExAuth.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${KeyExAuth.ip.endpoint.2}" />
+	</beans:bean>
+
+
+	<beans:bean id="keyExAuthServiceDAO"
+		class="com.servion.ws.persistence.impl.KeyExAuthServiceDAOImpl">
+		<property name="webServiceTemplate" ref="keyExAuthEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="keyExAuthEndpoint_2" />
+		<property name="soapActionUrl" value="${KeyExAuth.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${KeyExAuth.isToCallSecHost}" />
+	</beans:bean>
+	
+	<bean name="ws_RequestHeader_KeyExAuth" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${KeyExAuth.requesterID}" />
+		<property name="serviceName" value="${KeyExAuth.serviceName}" />
+		<property name="providerID" value="${KeyExAuth.providerID}" />
+		<property name="terminalID" value="${KeyExAuth.terminalID}" />
+		<property name="serviceVersionNo" value="${KeyExAuth.serviceVersionNo}" />
+		<property name="logLevel" value="${KeyExAuth.logLevel}" />
+	</bean>
+
+	<beans:bean id="keyExAuthService"
+		class="com.servion.ws.service.impl.KeyExAuthServiceImpl">
+		<property name="keyExAuthServiceDAO" ref="keyExAuthServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_KeyExAuth" />
+	</beans:bean>
+
+
+	<!-- ************************** LoanDtlsInq ************************************ -->
+
+
+	<bean name="marshallLoanDtlsInquiryEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.accountmanagementservice" />
+	</bean>
+
+
+	<oxm:jaxb2-marshaller id="marshallLoanDtlsInquiryEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.LoanDtlsInquiryReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.LoanDtlsInquiryResType" />
+	</oxm:jaxb2-marshaller>
+
+
+
+	<beans:bean id="loanDtlsInquirymessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="loanDtlsInquiryfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="loanDtlsInquiryEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="loanDtlsInquirymessageFactory" />
+		<property name="marshaller" ref="marshallLoanDtlsInquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallLoanDtlsInquiryEndpoint" />
+		<property name="faultMessageResolver" ref="loanDtlsInquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${LoanDtlsInquiry.ip.conn.time.out}" />
+				<property name="readTimeout" value="${LoanDtlsInquiry.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${LoanDtlsInquiry.ip.endpoint}" />
+	</beans:bean>
+
+
+	<beans:bean id="loanDtlsInquiryEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="loanDtlsInquirymessageFactory" />
+		<property name="marshaller" ref="marshallLoanDtlsInquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallLoanDtlsInquiryEndpoint" />
+		<property name="faultMessageResolver" ref="loanDtlsInquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${LoanDtlsInquiry.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${LoanDtlsInquiry.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${LoanDtlsInquiry.ip.endpoint.2}" />
+	</beans:bean>
+
+
+	<beans:bean id="loanDtlsInquiryServiceDAO"
+		class="com.servion.ws.persistence.impl.LoanDtlsInquiryServiceDAOImpl">
+		<property name="webServiceTemplate" ref="loanDtlsInquiryEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="loanDtlsInquiryEndpoint_2" />
+		<property name="soapActionUrl" value="${LoanDtlsInquiry.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${LoanDtlsInquiry.isToCallSecHost}" />
+	</beans:bean>
+
+	<bean name="ws_RequestHeader_LoanDtlsInquiry" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${LoanDtlsInquiry.requesterID}" />
+		<property name="serviceName" value="${LoanDtlsInquiry.serviceName}" />
+		<property name="providerID" value="${LoanDtlsInquiry.providerID}" />
+		<property name="terminalID" value="${LoanDtlsInquiry.terminalID}" />
+		<property name="serviceVersionNo" value="${LoanDtlsInquiry.serviceVersionNo}" />
+		<property name="logLevel" value="${LoanDtlsInquiry.logLevel}" />
+	</bean>
+
+	<beans:bean id="loanDtlsInquiryService"
+		class="com.servion.ws.service.impl.LoanDtlsInquiryServiceImpl">
+		<property name="loanDtlsInquiryServiceDAO" ref="loanDtlsInquiryServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_LoanDtlsInquiry" />
+	</beans:bean>
+
+
+
+
+	<!-- ************************** CCEntityInquiry ************************************ -->
+
+
+	<bean name="marshallCCEntityInquiryEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+	</bean>
+
+
+	<oxm:jaxb2-marshaller id="marshallCCEntityInquiryEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.CCEntityInqReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.CCEntityInqResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="ccEntityInquirymessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="ccEntityInquiryfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="ccEntityInquiryEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="ccEntityInquirymessageFactory" />
+		<property name="marshaller" ref="marshallCCEntityInquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallCCEntityInquiryEndpoint" />
+		<property name="faultMessageResolver" ref="ccEntityInquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CCEntityInquiry.ip.conn.time.out}" />
+				<property name="readTimeout" value="${CCEntityInquiry.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CCEntityInquiry.ip.endpoint}" />
+	</beans:bean>
+
+	<!-- <beans:bean id="ccEntityInquiryServiceDAO" -->
+	<!-- class="com.servion.ws.persistence.impl.CCEntityInquiryServiceDAOImpl"> -->
+
+	<!-- <property name="soapActionUrl" value="${ip.soap.action}" /> -->
+	<!-- </beans:bean> -->
+
+	<beans:bean id="ccEntityInquiryEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="ccEntityInquirymessageFactory" />
+		<property name="marshaller" ref="marshallCCEntityInquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallCCEntityInquiryEndpoint" />
+		<property name="faultMessageResolver" ref="ccEntityInquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CCEntityInquiry.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${CCEntityInquiry.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CCEntityInquiry.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="ccEntityInquiryServiceDAO"
+		class="com.servion.ws.persistence.impl.CCEntityInquiryServiceDAOImpl">
+		<property name="webServiceTemplate" ref="ccEntityInquiryEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="ccEntityInquiryEndpoint_2" />
+		<property name="soapActionUrl" value="${CCEntityInquiry.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${CCEntityInquiry.isToCallSecHost}" />
+	</beans:bean>
+	
+	<bean name="ws_RequestHeader_CCEntityInquiry" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${CCEntityInquiry.requesterID}" />
+		<property name="serviceName" value="${CCEntityInquiry.serviceName}" />
+		<property name="providerID" value="${CCEntityInquiry.providerID}" />
+		<property name="terminalID" value="${CCEntityInquiry.terminalID}" />
+		<property name="serviceVersionNo" value="${CCEntityInquiry.serviceVersionNo}" />
+		<property name="logLevel" value="${CCEntityInquiry.logLevel}" />
+	</bean>
+	
+
+	<beans:bean id="ccEntityInquiryService"
+		class="com.servion.ws.service.impl.CCEntityInquiryServiceImpl">
+		<property name="ccEntityInquiryServiceDAO" ref="ccEntityInquiryServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_CCEntityInquiry" />
+	</beans:bean>
+
+
+	<!-- ************************** DepositDtlsInq ************************************ -->
+
+
+	<bean name="marshallDepositDtlsInqEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.accountmanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallDepositDtlsInqEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.DepositDtlsInqReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.DepositDtlsInqResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="depositDtlsInqmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="depositDtlsInqfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="depositDtlsInqEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="depositDtlsInqmessageFactory" />
+		<property name="marshaller" ref="marshallDepositDtlsInqEndpoint" />
+		<property name="unmarshaller" ref="marshallDepositDtlsInqEndpoint" />
+		<property name="faultMessageResolver" ref="depositDtlsInqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${DepositDtlsInq.ip.conn.time.out}" />
+				<property name="readTimeout" value="${DepositDtlsInq.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${DepositDtlsInq.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="depositDtlsInqEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="depositDtlsInqmessageFactory" />
+		<property name="marshaller" ref="marshallDepositDtlsInqEndpoint" />
+		<property name="unmarshaller" ref="marshallDepositDtlsInqEndpoint" />
+		<property name="faultMessageResolver" ref="depositDtlsInqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${DepositDtlsInq.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${DepositDtlsInq.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${DepositDtlsInq.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="depositDtlsInqServiceDAO"
+		class="com.servion.ws.persistence.impl.DepositDtlsInqServiceDAOImpl">
+		<property name="webServiceTemplate" ref="depositDtlsInqEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="depositDtlsInqEndpoint_2" />
+		<property name="soapActionUrl" value="${DepositDtlsInq.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${DepositDtlsInq.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${DepositDtlsInq.requesterID}" />
+		<property name="serviceName" value="${DepositDtlsInq.serviceName}" />
+		<property name="providerID" value="${DepositDtlsInq.providerID}" />
+		<property name="terminalID" value="${DepositDtlsInq.terminalID}" />
+		<property name="serviceVersionNo" value="${DepositDtlsInq.serviceVersionNo}" />
+		<property name="logLevel" value="${DepositDtlsInq.logLevel}" />
+	</bean>
+
+	<beans:bean id="depositDtlsInqService"
+		class="com.servion.ws.service.impl.DepositDtlsInqServiceImpl">
+		<property name="depositDtlsInqServiceDAO" ref="depositDtlsInqServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader" />
+	</beans:bean>
+
+
+
+
+
+	<!-- ************************** ChqBookOrder ************************************ -->
+
+
+	<bean name="marshallChqBookOrderEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.accountmanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallChqBookOrderEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.ChequeBookOrderReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.ChequeBookOrderResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="chqBookOrdermessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="chqBookOrderfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="chqBookOrderEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="chqBookOrdermessageFactory" />
+		<property name="marshaller" ref="marshallChqBookOrderEndpoint" />
+		<property name="unmarshaller" ref="marshallChqBookOrderEndpoint" />
+		<property name="faultMessageResolver" ref="chqBookOrderfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${ChqBookOrder.ip.conn.time.out}" />
+				<property name="readTimeout" value="${ChqBookOrder.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${ChqBookOrder.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="chqBookOrderEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="chqBookOrdermessageFactory" />
+		<property name="marshaller" ref="marshallChqBookOrderEndpoint" />
+		<property name="unmarshaller" ref="marshallChqBookOrderEndpoint" />
+		<property name="faultMessageResolver" ref="chqBookOrderfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${ChqBookOrder.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${ChqBookOrder.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${ChqBookOrder.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="chqBookOrderServiceDAO"
+		class="com.servion.ws.persistence.impl.ChqBookOrderServiceDAOImpl">
+		<property name="webServiceTemplate" ref="chqBookOrderEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="chqBookOrderEndpoint_2" />
+		<property name="soapActionUrl" value="${ChqBookOrder.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${ChqBookOrder.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_chqBookOrder" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${ChqBookOrder.requesterID}" />
+		<property name="serviceName" value="${ChqBookOrder.serviceName}" />
+		<property name="providerID" value="${ChqBookOrder.providerID}" />
+		<property name="terminalID" value="${ChqBookOrder.terminalID}" />
+		<property name="serviceVersionNo" value="${ChqBookOrder.serviceVersionNo}" />
+		<property name="logLevel" value="${ChqBookOrder.logLevel}" />
+	</bean>
+
+	<beans:bean id="chqBookOrderService"
+		class="com.servion.ws.service.impl.ChqBookOrderServiceImpl">
+		<property name="chqBookOrderServiceDAO" ref="chqBookOrderServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_chqBookOrder" />
+	</beans:bean>
+
+	<!-- ************************** LastNNumTransInq ************************************ -->
+
+
+	<bean name="marshallLastNNumTransInqEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.accountmanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallLastNNumTransInqEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.BankAcctMiniStmtReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.BankAcctMiniStmtResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="lastNNumTransInqmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="lastNNumTransInqfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="lastNNumTransInqEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="lastNNumTransInqmessageFactory" />
+		<property name="marshaller" ref="marshallLastNNumTransInqEndpoint" />
+		<property name="unmarshaller" ref="marshallLastNNumTransInqEndpoint" />
+		<property name="faultMessageResolver" ref="lastNNumTransInqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${LastNNumTransInq.ip.conn.time.out}" />
+				<property name="readTimeout" value="${LastNNumTransInq.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${LastNNumTransInq.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="lastNNumTransInqEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="lastNNumTransInqmessageFactory" />
+		<property name="marshaller" ref="marshallLastNNumTransInqEndpoint" />
+		<property name="unmarshaller" ref="marshallLastNNumTransInqEndpoint" />
+		<property name="faultMessageResolver" ref="lastNNumTransInqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${LastNNumTransInq.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${LastNNumTransInq.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${LastNNumTransInq.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="lastNNumTransInquiryServiceDAO"
+		class="com.servion.ws.persistence.impl.LastNNumTransInquiryServiceDAOImpl">
+		<property name="webServiceTemplate" ref="lastNNumTransInqEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="lastNNumTransInqEndpoint_2" />
+		<property name="soapActionUrl" value="${LastNNumTransInq.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${LastNNumTransInq.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_LastNNumTrans" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${LastNNumTransInq.requesterID}" />
+		<property name="serviceName" value="${LastNNumTransInq.serviceName}" />
+		<property name="providerID" value="${LastNNumTransInq.providerID}" />
+		<property name="terminalID" value="${LastNNumTransInq.terminalID}" />
+		<property name="serviceVersionNo" value="${LastNNumTransInq.serviceVersionNo}" />
+		<property name="logLevel" value="${LastNNumTransInq.logLevel}" />
+	</bean>
+
+	<beans:bean id="lastNNumTransInquiryService"
+		class="com.servion.ws.service.impl.LastNNumTransInquiryServiceImpl">
+		<property name="lastNNumTransInquiryServiceDAO" ref="lastNNumTransInquiryServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_LastNNumTrans" />
+	</beans:bean>
+
+
+
+	<!-- ************************** BeneficiaryListInqReq ************************************ -->
+
+
+	<bean name="marshallBeneficiaryListInqReqEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths"
+			value="com.bankmuscat.esb.beneficiarymanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallBeneficiaryListInqReqEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.BeneficiaryListInqReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.BeneficiaryListInqResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="beneficiaryListInqReqmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="beneficiaryListInqReqfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="beneficiaryListInqReqEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="beneficiaryListInqReqmessageFactory" />
+		<property name="marshaller" ref="marshallBeneficiaryListInqReqEndpoint" />
+		<property name="unmarshaller" ref="marshallBeneficiaryListInqReqEndpoint" />
+		<property name="faultMessageResolver" ref="beneficiaryListInqReqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${BeneficiaryListInqReq.ip.conn.time.out}" />
+				<property name="readTimeout" value="${BeneficiaryListInqReq.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${BeneficiaryListInqReq.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="beneficiaryListInqReqEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="beneficiaryListInqReqmessageFactory" />
+		<property name="marshaller" ref="marshallBeneficiaryListInqReqEndpoint" />
+		<property name="unmarshaller" ref="marshallBeneficiaryListInqReqEndpoint" />
+		<property name="faultMessageResolver" ref="beneficiaryListInqReqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout"
+					value="${BeneficiaryListInqReq.ip.conn.time.out.2}" />
+				<property name="readTimeout"
+					value="${BeneficiaryListInqReq.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${BeneficiaryListInqReq.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="listBeneficiaryServiceDAO"
+		class="com.servion.ws.persistence.impl.ListBeneficiaryServiceDAOImpl">
+		<property name="webServiceTemplate" ref="beneficiaryListInqReqEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="beneficiaryListInqReqEndpoint_2" />
+		<property name="soapActionUrl" value="${BeneficiaryListInqReq.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${BeneficiaryListInqReq.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_BeneficiaryList" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${BeneficiaryListInqReq.requesterID}" />
+		<property name="serviceName" value="${BeneficiaryListInqReq.serviceName}" />
+		<property name="providerID" value="${BeneficiaryListInqReq.providerID}" />
+		<property name="terminalID" value="${BeneficiaryListInqReq.terminalID}" />
+		<property name="serviceVersionNo" value="${BeneficiaryListInqReq.serviceVersionNo}" />
+		<property name="logLevel" value="${BeneficiaryListInqReq.logLevel}" />
+	</bean>
+
+	<beans:bean id="listBeneficiaryService"
+		class="com.servion.ws.service.impl.ListBeneficiaryServiceImpl">
+		<property name="listBeneficiaryServiceDAO" ref="listBeneficiaryServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_BeneficiaryList" />
+	</beans:bean>
+
+
+	<!-- ************************** BeneficiaryDetailsEnquiry ************************************ -->
+
+
+	<bean name="marshallBeneficiaryDetailsEnquiryEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths"
+			value="com.bankmuscat.esb.beneficiarymanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallBeneficiaryDetailsEnquiryEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.BeneficiaryDetailsEnquiryReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.BeneficiaryDetailsEnquiryResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="beneficiaryDetailsEnquirymessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="beneficiaryDetailsEnquiryfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="beneficiaryDetailsEnquiryEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="beneficiaryDetailsEnquirymessageFactory" />
+		<property name="marshaller" ref="marshallBeneficiaryDetailsEnquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallBeneficiaryDetailsEnquiryEndpoint" />
+		<property name="faultMessageResolver" ref="beneficiaryDetailsEnquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout"
+					value="${BeneficiaryDetailsEnquiry.ip.conn.time.out}" />
+				<property name="readTimeout"
+					value="${BeneficiaryDetailsEnquiry.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${BeneficiaryDetailsEnquiry.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="beneficiaryDetailsEnquiryEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="beneficiaryDetailsEnquirymessageFactory" />
+		<property name="marshaller" ref="marshallBeneficiaryDetailsEnquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallBeneficiaryDetailsEnquiryEndpoint" />
+		<property name="faultMessageResolver" ref="beneficiaryDetailsEnquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout"
+					value="${BeneficiaryDetailsEnquiry.ip.conn.time.out.2}" />
+				<property name="readTimeout"
+					value="${BeneficiaryDetailsEnquiry.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${BeneficiaryDetailsEnquiry.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="beneficiaryDtlsInquiryServiceDAO"
+		class="com.servion.ws.persistence.impl.BeneficiaryDtlsInquiryServiceDAOImpl">
+		<property name="webServiceTemplate" ref="beneficiaryDetailsEnquiryEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="beneficiaryDetailsEnquiryEndpoint_2" />
+		<property name="soapActionUrl" value="${BeneficiaryDetailsEnquiry.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${BeneficiaryDetailsEnquiry.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_BeneficiaryDtlsInquiry" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${BeneficiaryDetailsEnquiry.requesterID}" />
+		<property name="serviceName" value="${BeneficiaryDetailsEnquiry.serviceName}" />
+		<property name="providerID" value="${BeneficiaryDetailsEnquiry.providerID}" />
+		<property name="terminalID" value="${BeneficiaryDetailsEnquiry.terminalID}" />
+		<property name="serviceVersionNo" value="${BeneficiaryDetailsEnquiry.serviceVersionNo}" />
+		<property name="logLevel" value="${BeneficiaryDetailsEnquiry.logLevel}" />
+	</bean>
+
+	<beans:bean id="beneficiaryDtlsInquiryService"
+		class="com.servion.ws.service.impl.BeneficiaryDtlsInquiryServiceImpl">
+		<property name="beneficiaryDtlsInquiryServiceDAO" ref="beneficiaryDtlsInquiryServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_BeneficiaryDtlsInquiry" />
+	</beans:bean>
+
+
+	<!-- ************************** UtilityBillPayment ************************************ -->
+
+
+	<bean name="marshallUtilityBillPaymentEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.financialtxnservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallUtilityBillPaymentEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.UtilityBillPaymentReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.UtilityBillPaymentResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="utilityBillPaymentmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="utilityBillPaymentfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="utilityBillPaymentEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="utilityBillPaymentmessageFactory" />
+		<property name="marshaller" ref="marshallUtilityBillPaymentEndpoint" />
+		<property name="unmarshaller" ref="marshallUtilityBillPaymentEndpoint" />
+		<property name="faultMessageResolver" ref="utilityBillPaymentfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${UtilityBillPayment.ip.conn.time.out}" />
+				<property name="readTimeout" value="${UtilityBillPayment.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${UtilityBillPayment.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="utilityBillPaymentEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="utilityBillPaymentmessageFactory" />
+		<property name="marshaller" ref="marshallUtilityBillPaymentEndpoint" />
+		<property name="unmarshaller" ref="marshallUtilityBillPaymentEndpoint" />
+		<property name="faultMessageResolver" ref="utilityBillPaymentfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${UtilityBillPayment.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${UtilityBillPayment.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${UtilityBillPayment.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="utilityBillPaymentServiceDAO"
+		class="com.servion.ws.persistence.impl.UtilityBillPaymentServiceDAOImpl">
+		<property name="webServiceTemplate" ref="utilityBillPaymentEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="utilityBillPaymentEndpoint_2" />
+		<property name="soapActionUrl" value="${UtilityBillPayment.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${UtilityBillPayment.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_UtilityBillPayment" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${UtilityBillPayment.requesterID}" />
+		<property name="serviceName" value="${UtilityBillPayment.serviceName}" />
+		<property name="providerID" value="${UtilityBillPayment.providerID}" />
+		<property name="terminalID" value="${UtilityBillPayment.terminalID}" />
+		<property name="serviceVersionNo" value="${UtilityBillPayment.serviceVersionNo}" />
+		<property name="logLevel" value="${UtilityBillPayment.logLevel}" />
+	</bean>
+
+	<beans:bean id="utilityBillPaymentService"
+		class="com.servion.ws.service.impl.UtilityBillPaymentServiceImpl">
+		<property name="utilityBillPaymentServiceDAO" ref="utilityBillPaymentServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_UtilityBillPayment" />
+	</beans:bean>
+
+	<!-- ************************** UtilityBillPaymentCC ************************************ -->
+
+
+	<bean name="marshallUtilityBillPaymentCCEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.financialtxnservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallUtilityBillPaymentCCEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.UtilityBillPaymentCCReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.UtilityBillPaymentCCResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="utilityBillPaymentCCmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="utilityBillPaymentCCfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="utilityBillPaymentCCEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="lastNNumTransInqmessageFactory" />
+		<property name="marshaller" ref="marshallUtilityBillPaymentCCEndpoint" />
+		<property name="unmarshaller" ref="marshallUtilityBillPaymentCCEndpoint" />
+		<property name="faultMessageResolver" ref="utilityBillPaymentCCfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${UtilityBillPaymentCC.ip.conn.time.out}" />
+				<property name="readTimeout" value="${UtilityBillPaymentCC.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${UtilityBillPaymentCC.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="utilityBillPaymentCCEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="utilityBillPaymentCCmessageFactory" />
+		<property name="marshaller" ref="marshallUtilityBillPaymentCCEndpoint" />
+		<property name="unmarshaller" ref="marshallUtilityBillPaymentCCEndpoint" />
+		<property name="faultMessageResolver" ref="utilityBillPaymentCCfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${UtilityBillPaymentCC.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${UtilityBillPaymentCC.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${UtilityBillPaymentCC.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="utilityBillPaymentCCServiceDAO"
+		class="com.servion.ws.persistence.impl.UtilityBillPaymentCCServiceDAOImpl">
+		<property name="webServiceTemplate" ref="utilityBillPaymentCCEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="utilityBillPaymentCCEndpoint_2" />
+		<property name="soapActionUrl" value="${UtilityBillPaymentCC.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${UtilityBillPaymentCC.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_UtilityBillPaymentCC" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${UtilityBillPaymentCC.requesterID}" />
+		<property name="serviceName" value="${UtilityBillPaymentCC.serviceName}" />
+		<property name="providerID" value="${UtilityBillPaymentCC.providerID}" />
+		<property name="terminalID" value="${UtilityBillPaymentCC.terminalID}" />
+		<property name="serviceVersionNo" value="${UtilityBillPaymentCC.serviceVersionNo}" />
+		<property name="logLevel" value="${UtilityBillPaymentCC.logLevel}" />
+	</bean>
+
+	<beans:bean id="utilityBillPaymentCCService"
+		class="com.servion.ws.service.impl.UtilityBillPaymentCCServiceImpl">
+		<property name="utilityBillPaymentCCServiceDAO" ref="utilityBillPaymentCCServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_UtilityBillPaymentCC" />
+	</beans:bean>
+
+
+
+	<!-- ************************** CCGroupInquiry ************************************ -->
+
+
+	<bean name="marshallCCGroupInquiryEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallCCGroupInquiryEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.CCGrpInqReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.CCGrpInqResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="ccGroupInquirymessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="ccGroupInquiryfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="ccGroupInquiryEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="ccGroupInquirymessageFactory" />
+		<property name="marshaller" ref="marshallCCGroupInquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallCCGroupInquiryEndpoint" />
+		<property name="faultMessageResolver" ref="ccGroupInquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CCGroupInquiry.ip.conn.time.out}" />
+				<property name="readTimeout" value="${CCGroupInquiry.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CCGroupInquiry.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="ccGroupInquiryEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="ccGroupInquirymessageFactory" />
+		<property name="marshaller" ref="marshallCCGroupInquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallCCGroupInquiryEndpoint" />
+		<property name="faultMessageResolver" ref="ccGroupInquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CCGroupInquiry.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${CCGroupInquiry.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CCGroupInquiry.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="ccGroupInquiryServiceDAO"
+		class="com.servion.ws.persistence.impl.CCGroupInquiryServiceDAOImpl">
+		<property name="webServiceTemplate" ref="ccGroupInquiryEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="ccGroupInquiryEndpoint_2" />
+		<property name="soapActionUrl" value="${CCGroupInquiry.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${CCGroupInquiry.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_CCGroupInquiry" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${CCGroupInquiry.requesterID}" />
+		<property name="serviceName" value="${CCGroupInquiry.serviceName}" />
+		<property name="providerID" value="${CCGroupInquiry.providerID}" />
+		<property name="terminalID" value="${CCGroupInquiry.terminalID}" />
+		<property name="serviceVersionNo" value="${CCGroupInquiry.serviceVersionNo}" />
+		<property name="logLevel" value="${CCGroupInquiry.logLevel}" />
+	</bean>
+
+	<beans:bean id="ccGroupInquiryService"
+		class="com.servion.ws.service.impl.CCGroupInquiryServiceImpl">
+		<property name="ccGroupInquiryServiceDAO" ref="ccGroupInquiryServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_CCGroupInquiry" />
+	</beans:bean>
+
+
+	<!-- ************************** CCAcctStmtInq ************************************ -->
+
+
+	<bean name="marshallCCAcctStmtInqEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallCCAcctStmtInqEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.CCAcctStmtInqReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.cardmanagementservice.CCAcctStmtInqResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="ccAcctStmtInqmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="ccAcctStmtInqfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="ccAcctStmtInqEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="ccAcctStmtInqmessageFactory" />
+		<property name="marshaller" ref="marshallCCAcctStmtInqEndpoint" />
+		<property name="unmarshaller" ref="marshallCCAcctStmtInqEndpoint" />
+		<property name="faultMessageResolver" ref="ccAcctStmtInqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CCAcctStmtInq.ip.conn.time.out}" />
+				<property name="readTimeout" value="${CCAcctStmtInq.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CCAcctStmtInq.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="ccAcctStmtInqEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="ccAcctStmtInqmessageFactory" />
+		<property name="marshaller" ref="marshallCCAcctStmtInqEndpoint" />
+		<property name="unmarshaller" ref="marshallCCAcctStmtInqEndpoint" />
+		<property name="faultMessageResolver" ref="ccAcctStmtInqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CCAcctStmtInq.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${CCAcctStmtInq.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CCAcctStmtInq.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="ccAcctStmtInqServiceDAO"
+		class="com.servion.ws.persistence.impl.CCAcctStmtInqServiceDAOImpl">
+		<property name="webServiceTemplate" ref="ccAcctStmtInqEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="ccAcctStmtInqEndpoint_2" />
+		<property name="soapActionUrl" value="${CCAcctStmtInq.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${CCAcctStmtInq.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_CCAcctStmtInq" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${CCAcctStmtInq.requesterID}" />
+		<property name="serviceName" value="${CCAcctStmtInq.serviceName}" />
+		<property name="providerID" value="${CCAcctStmtInq.providerID}" />
+		<property name="terminalID" value="${CCAcctStmtInq.terminalID}" />
+		<property name="serviceVersionNo" value="${CCAcctStmtInq.serviceVersionNo}" />
+		<property name="logLevel" value="${CCAcctStmtInq.logLevel}" />
+	</bean>
+
+	<beans:bean id="ccAcctStmtInqService"
+		class="com.servion.ws.service.impl.CCAcctStmtInqServiceImpl">
+		<property name="ccAcctStmtInqServiceDAO" ref="ccAcctStmtInqServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_CCAcctStmtInq" />
+	</beans:bean>
+
+
+	<!-- ************************** SMSNotification ************************************ -->
+
+
+	<bean name="marshallSMSNotificationEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.miscellaneousservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallSMSNotificationEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.miscellaneousservice.SMSNotificationRequestType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.miscellaneousservice.SMSNotificationResponseType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="sMSNotificationmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="sMSNotificationfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="sMSNotificationEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="sMSNotificationmessageFactory" />
+		<property name="marshaller" ref="marshallSMSNotificationEndpoint" />
+		<property name="unmarshaller" ref="marshallSMSNotificationEndpoint" />
+		<property name="faultMessageResolver" ref="sMSNotificationfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${SMSNotification.ip.conn.time.out}" />
+				<property name="readTimeout" value="${SMSNotification.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${SMSNotification.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="sMSNotificationEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="sMSNotificationmessageFactory" />
+		<property name="marshaller" ref="marshallSMSNotificationEndpoint" />
+		<property name="unmarshaller" ref="marshallSMSNotificationEndpoint" />
+		<property name="faultMessageResolver" ref="sMSNotificationfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${SMSNotification.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${SMSNotification.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${SMSNotification.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="smsNotificationServiceDAO"
+		class="com.servion.ws.persistence.impl.SMSNotificationServiceDAOImpl">
+		<property name="webServiceTemplate" ref="sMSNotificationEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="sMSNotificationEndpoint_2" />
+		<property name="soapActionUrl" value="${SMSNotification.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${SMSNotification.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_SMSNotification" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${SMSNotification.requesterID}" />
+		<property name="serviceName" value="${SMSNotification.serviceName}" />
+		<property name="providerID" value="${SMSNotification.providerID}" />
+		<property name="terminalID" value="${SMSNotification.terminalID}" />
+		<property name="serviceVersionNo" value="${SMSNotification.serviceVersionNo}" />
+		<property name="logLevel" value="${SMSNotification.logLevel}" />
+	</bean>
+
+	<beans:bean id="smsNotificationService"
+		class="com.servion.ws.service.impl.SMSNotificationServiceImpl">
+		<property name="smsNotificationServiceDAO" ref="smsNotificationServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_SMSNotification" />
+	</beans:bean>
+
+
+	<!-- ************************** ExchgRateInq ************************************ -->
+
+
+	<bean name="marshallExchgRateInqEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.miscellaneousservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallExchgRateInqEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.miscellaneousservice.ExchgRateInqReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.miscellaneousservice.ExchgRateInqResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="exchgRateInqmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="exchgRateInqfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="exchgRateInqEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="exchgRateInqmessageFactory" />
+		<property name="marshaller" ref="marshallExchgRateInqEndpoint" />
+		<property name="unmarshaller" ref="marshallExchgRateInqEndpoint" />
+		<property name="faultMessageResolver" ref="exchgRateInqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${ExchgRateInq.ip.conn.time.out}" />
+				<property name="readTimeout" value="${ExchgRateInq.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${ExchgRateInq.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="exchgRateInqEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="exchgRateInqmessageFactory" />
+		<property name="marshaller" ref="marshallExchgRateInqEndpoint" />
+		<property name="unmarshaller" ref="marshallExchgRateInqEndpoint" />
+		<property name="faultMessageResolver" ref="exchgRateInqfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${ExchgRateInq.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${ExchgRateInq.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${ExchgRateInq.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="exchngRateInqServiceDAO"
+		class="com.servion.ws.persistence.impl.ExchngRateInqServiceDAOImpl">
+		<property name="webServiceTemplate" ref="exchgRateInqEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="exchgRateInqEndpoint_2" />
+		<property name="soapActionUrl" value="${ExchgRateInq.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${ExchgRateInq.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_ExchgRateInq" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${ExchgRateInq.requesterID}" />
+		<property name="serviceName" value="${ExchgRateInq.serviceName}" />
+		<property name="providerID" value="${ExchgRateInq.providerID}" />
+		<property name="terminalID" value="${ExchgRateInq.terminalID}" />
+		<property name="serviceVersionNo" value="${ExchgRateInq.serviceVersionNo}" />
+		<property name="logLevel" value="${ExchgRateInq.logLevel}" />
+	</bean>
+
+	<beans:bean id="exchngRateInqService"
+		class="com.servion.ws.service.impl.ExchngRateInqServiceImpl">
+		<property name="exchngRateInqServiceDAO" ref="exchngRateInqServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_ExchgRateInq" />
+	</beans:bean>
+
+
+	<!-- ************************** XferFund ************************************ -->
+
+
+	<bean name="marshallXferFundEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.financialtxnservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallXferFundEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.XferFundReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.XferFundResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="xferFundmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="xferFundfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="xferFundEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="xferFundmessageFactory" />
+		<property name="marshaller" ref="marshallXferFundEndpoint" />
+		<property name="unmarshaller" ref="marshallXferFundEndpoint" />
+		<property name="faultMessageResolver" ref="xferFundfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${XferFund.ip.conn.time.out}" />
+				<property name="readTimeout" value="${XferFund.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${XferFund.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="xferFundEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="xferFundmessageFactory" />
+		<property name="marshaller" ref="marshallXferFundEndpoint" />
+		<property name="unmarshaller" ref="marshallXferFundEndpoint" />
+		<property name="faultMessageResolver" ref="xferFundfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${XferFund.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${XferFund.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${XferFund.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="fundTransferIntraServiceDAO"
+		class="com.servion.ws.persistence.impl.FundTransferIntraServiceDAOImpl">
+		<property name="webServiceTemplate" ref="xferFundEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="xferFundEndpoint_2" />
+		<property name="soapActionUrl" value="${XferFund.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${XferFund.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_XferFund" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${XferFund.requesterID}" />
+		<property name="serviceName" value="${XferFund.serviceName}" />
+		<property name="providerID" value="${XferFund.providerID}" />
+		<property name="terminalID" value="${XferFund.terminalID}" />
+		<property name="serviceVersionNo" value="${XferFund.serviceVersionNo}" />
+		<property name="logLevel" value="${XferFund.logLevel}" />
+	</bean>
+
+	<beans:bean id="fundTransferIntraService"
+		class="com.servion.ws.service.impl.FundTransferIntraServiceImpl">
+		<property name="fundTransferIntraServiceDAO" ref="fundTransferIntraServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_XferFund" />
+	</beans:bean>
+
+
+
+<!-- ************************** XferRemitt ************************************ -->
+
+
+	<bean name="marshallXferRemittEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.financialtxnservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallXferRemittEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.XferRemittReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.XferRemittResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="xferRemittmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="xferRemittfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="xferRemittEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="xferRemittmessageFactory" />
+		<property name="marshaller" ref="marshallXferRemittEndpoint" />
+		<property name="unmarshaller" ref="marshallXferRemittEndpoint" />
+		<property name="faultMessageResolver" ref="xferRemittfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${XferRemitt.ip.conn.time.out}" />
+				<property name="readTimeout" value="${XferRemitt.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${XferRemitt.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="xferRemittEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="xferRemittmessageFactory" />
+		<property name="marshaller" ref="marshallXferRemittEndpoint" />
+		<property name="unmarshaller" ref="marshallXferRemittEndpoint" />
+		<property name="faultMessageResolver" ref="xferRemittfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${XferRemitt.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${XferRemitt.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${XferRemitt.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="fundsTransferRemittServiceDAO"
+		class="com.servion.ws.persistence.impl.FundsTransferRemittServiceDAOImpl">
+		<property name="webServiceTemplate" ref="xferRemittEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="xferRemittEndpoint_2" />
+		<property name="soapActionUrl" value="${XferRemitt.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${XferRemitt.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_XferRemitt" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${XferRemitt.requesterID}" />
+		<property name="serviceName" value="${XferRemitt.serviceName}" />
+		<property name="providerID" value="${XferRemitt.providerID}" />
+		<property name="terminalID" value="${XferRemitt.terminalID}" />
+		<property name="serviceVersionNo" value="${XferRemitt.serviceVersionNo}" />
+		<property name="logLevel" value="${XferRemitt.logLevel}" />
+	</bean>
+
+	<beans:bean id="fundsTransferRemittService"
+		class="com.servion.ws.service.impl.FundsTransferRemittServiceImpl">
+		<property name="fundsTransferRemittServiceDAO" ref="fundsTransferRemittServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_XferRemitt" />
+	</beans:bean>
+	
+	
+	<!-- ************************** CreditCardPaymentReq ************************************ -->
+
+
+	<bean name="marshallCreditCardPaymentEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.financialtxnservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallCreditCardPaymentEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.CreditCardPaymentReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.CreditCardPaymentResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="creditCardPaymentmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="creditCardPaymentfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="creditCardPaymentEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="creditCardPaymentmessageFactory" />
+		<property name="marshaller" ref="marshallCreditCardPaymentEndpoint" />
+		<property name="unmarshaller" ref="marshallCreditCardPaymentEndpoint" />
+		<property name="faultMessageResolver" ref="creditCardPaymentfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CreditCardPayment.ip.conn.time.out}" />
+				<property name="readTimeout" value="${CreditCardPayment.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CreditCardPayment.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="creditCardPaymentEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="creditCardPaymentmessageFactory" />
+		<property name="marshaller" ref="marshallCreditCardPaymentEndpoint" />
+		<property name="unmarshaller" ref="marshallCreditCardPaymentEndpoint" />
+		<property name="faultMessageResolver" ref="creditCardPaymentfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CreditCardPayment.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${CreditCardPayment.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CreditCardPayment.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="ccPaymentServiceDAO"
+		class="com.servion.ws.persistence.impl.CCPaymentServiceDAOImpl">
+		<property name="webServiceTemplate" ref="creditCardPaymentEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="creditCardPaymentEndpoint_2" />
+		<property name="soapActionUrl" value="${CreditCardPayment.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${CreditCardPayment.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_CreditCardPayment" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${CreditCardPayment.requesterID}" />
+		<property name="serviceName" value="${CreditCardPayment.serviceName}" />
+		<property name="providerID" value="${CreditCardPayment.providerID}" />
+		<property name="terminalID" value="${CreditCardPayment.terminalID}" />
+		<property name="serviceVersionNo" value="${CreditCardPayment.serviceVersionNo}" />
+		<property name="logLevel" value="${CreditCardPayment.logLevel}" />
+	</bean>
+
+	<beans:bean id="ccPaymentService"
+		class="com.servion.ws.service.impl.CCPaymentServiceImpl">
+		<property name="ccPaymentServiceDAO" ref="ccPaymentServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_CreditCardPayment" />
+	</beans:bean>
+	
+		
+	<!-- ************************** CCTxnPostRes ************************************ -->
+
+
+	<bean name="marshallCCTxnPostEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.financialtxnservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallCCTxnPostEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.CCTxnPostReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.financialtxnservice.CCTxnPostResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="ccTxnPostmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="ccTxnPostfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="ccTxnPostEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="ccTxnPostmessageFactory" />
+		<property name="marshaller" ref="marshallCCTxnPostEndpoint" />
+		<property name="unmarshaller" ref="marshallCCTxnPostEndpoint" />
+		<property name="faultMessageResolver" ref="ccTxnPostfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CCTxnPost.ip.conn.time.out}" />
+				<property name="readTimeout" value="${CCTxnPost.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CCTxnPost.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="ccTxnPostEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="ccTxnPostmessageFactory" />
+		<property name="marshaller" ref="marshallCCTxnPostEndpoint" />
+		<property name="unmarshaller" ref="marshallCCTxnPostEndpoint" />
+		<property name="faultMessageResolver" ref="ccTxnPostfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CCTxnPost.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${CCTxnPost.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CCTxnPost.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="cctxnPostRqServiceDAO"
+		class="com.servion.ws.persistence.impl.CCtxnPostRqServiceDAOImpl">
+		<property name="webServiceTemplate" ref="ccTxnPostEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="ccTxnPostEndpoint_2" />
+		<property name="soapActionUrl" value="${CCTxnPost.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${CCTxnPost.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_CCTxnPost" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${CCTxnPost.requesterID}" />
+		<property name="serviceName" value="${CCTxnPost.serviceName}" />
+		<property name="providerID" value="${CCTxnPost.providerID}" />
+		<property name="terminalID" value="${CCTxnPost.terminalID}" />
+		<property name="serviceVersionNo" value="${CCTxnPost.serviceVersionNo}" />
+		<property name="logLevel" value="${CCTxnPost.logLevel}" />
+	</bean>
+
+	<beans:bean id="cctxnPostRqService"
+		class="com.servion.ws.service.impl.CCtxnPostRqServiceImpl">
+		<property name="cctxnPostRqServiceDAO" ref="cctxnPostRqServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_CCTxnPost" />
+	</beans:bean>
+	
+	
+			
+	<!-- ************************** BeneficiaryRegistration ************************************ -->
+
+
+	<bean name="marshallBeneficiaryRegistrationEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.beneficiarymanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallBeneficiaryRegistrationEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.BeneficiaryRegistrationReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.BeneficiaryRegistrationResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="beneficiaryRegistrationmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="beneficiaryRegistrationfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="beneficiaryRegistrationEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="beneficiaryRegistrationmessageFactory" />
+		<property name="marshaller" ref="marshallBeneficiaryRegistrationEndpoint" />
+		<property name="unmarshaller" ref="marshallBeneficiaryRegistrationEndpoint" />
+		<property name="faultMessageResolver" ref="beneficiaryRegistrationfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${BeneficiaryRegistration.ip.conn.time.out}" />
+				<property name="readTimeout" value="${BeneficiaryRegistration.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${BeneficiaryRegistration.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="beneficiaryRegistrationEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="beneficiaryRegistrationmessageFactory" />
+		<property name="marshaller" ref="marshallBeneficiaryRegistrationEndpoint" />
+		<property name="unmarshaller" ref="marshallBeneficiaryRegistrationEndpoint" />
+		<property name="faultMessageResolver" ref="beneficiaryRegistrationfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${BeneficiaryRegistration.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${BeneficiaryRegistration.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${BeneficiaryRegistration.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="beneficiaryRegstServiceDAO"
+		class="com.servion.ws.persistence.impl.BeneficiaryRegstServiceDAOImpl">
+		<property name="webServiceTemplate" ref="beneficiaryRegistrationEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="beneficiaryRegistrationEndpoint_2" />
+		<property name="soapActionUrl" value="${BeneficiaryRegistration.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${BeneficiaryRegistration.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_BeneficiaryRegistration" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${BeneficiaryRegistration.requesterID}" />
+		<property name="serviceName" value="${BeneficiaryRegistration.serviceName}" />
+		<property name="providerID" value="${BeneficiaryRegistration.providerID}" />
+		<property name="terminalID" value="${BeneficiaryRegistration.terminalID}" />
+		<property name="serviceVersionNo" value="${BeneficiaryRegistration.serviceVersionNo}" />
+		<property name="logLevel" value="${BeneficiaryRegistration.logLevel}" />
+	</bean>
+
+	<beans:bean id="beneficiaryRegstService"
+		class="com.servion.ws.service.impl.BeneficiaryRegstServiceImpl">
+		<property name="beneficiaryRegstServiceDAO" ref="beneficiaryRegstServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_BeneficiaryRegistration" />
+	</beans:bean>
+	
+	<!-- ************************** Send FAX Service ************************************ -->
+
+
+	<bean name="marshallSendFaxEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="org.tempuri" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallSendFaxEndpoint">
+		<oxm:class-to-be-bound
+			name="org.tempuri.SendFax" />
+
+		<oxm:class-to-be-bound
+			name="org.tempuri.SendFaxResponse" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="sendFaxmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="sendFaxfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="sendFaxEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="sendFaxmessageFactory" />
+		<property name="marshaller" ref="marshallSendFaxEndpoint" />
+		<property name="unmarshaller" ref="marshallSendFaxEndpoint" />
+		<property name="faultMessageResolver" ref="sendFaxfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${SendFax.ip.conn.time.out}" />
+				<property name="readTimeout" value="${SendFax.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${SendFax.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="sendFaxEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="sendFaxmessageFactory" />
+		<property name="marshaller" ref="marshallSendFaxEndpoint" />
+		<property name="unmarshaller" ref="marshallSendFaxEndpoint" />
+		<property name="faultMessageResolver" ref="sendFaxfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${SendFax.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${SendFax.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${SendFax.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="sendFaxServiceDAO"
+		class="com.servion.ws.persistence.impl.SendFaxServiceDAOImpl">
+		<property name="webServiceTemplate" ref="sendFaxEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="sendFaxEndpoint_2" />
+		<property name="soapActionUrl" value="${SendFax.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${SendFax.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_SendFax" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${SendFax.requesterID}" />
+		<property name="serviceName" value="${SendFax.serviceName}" />
+		<property name="providerID" value="${SendFax.providerID}" />
+	</bean>
+
+	<beans:bean id="sendFaxService"
+		class="com.servion.ws.service.impl.SendFaxServiceImpl">
+		<property name="sendFaxServiceDAO" ref="sendFaxServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_SendFax" />
+	</beans:bean>
+	
+	
+	<!-- ************************** AcctDtlsInquiry ************************************ -->
+
+
+	<bean name="marshallAcctDtlsInquiryEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.accountmanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallAcctDtlsInquiryEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.AcctDtlsInquiryReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.accountmanagementservice.AcctDtlsInquiryResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="acctDtlsInquirymessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="acctDtlsInquiryfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="acctDtlsInquiryEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="acctDtlsInquirymessageFactory" />
+		<property name="marshaller" ref="marshallAcctDtlsInquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallAcctDtlsInquiryEndpoint" />
+		<property name="faultMessageResolver" ref="acctDtlsInquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${AcctDtlsInquiry.ip.conn.time.out}" />
+				<property name="readTimeout" value="${AcctDtlsInquiry.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${AcctDtlsInquiry.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="acctDtlsInquiryEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="acctDtlsInquirymessageFactory" />
+		<property name="marshaller" ref="marshallAcctDtlsInquiryEndpoint" />
+		<property name="unmarshaller" ref="marshallAcctDtlsInquiryEndpoint" />
+		<property name="faultMessageResolver" ref="acctDtlsInquiryfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${AcctDtlsInquiry.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${AcctDtlsInquiry.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${AcctDtlsInquiry.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="acctDtlsInquiryServiceDAO"
+		class="com.servion.ws.persistence.impl.AcctDtlsInquiryServiceDAOImpl">
+		<property name="webServiceTemplate" ref="acctDtlsInquiryEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="acctDtlsInquiryEndpoint_2" />
+		<property name="soapActionUrl" value="${AcctDtlsInquiry.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${AcctDtlsInquiry.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_AcctDtlsInquiry" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${AcctDtlsInquiry.requesterID}" />
+		<property name="serviceName" value="${AcctDtlsInquiry.serviceName}" />
+		<property name="providerID" value="${AcctDtlsInquiry.providerID}" />
+		<property name="terminalID" value="${AcctDtlsInquiry.terminalID}" />
+		<property name="serviceVersionNo" value="${AcctDtlsInquiry.serviceVersionNo}" />
+		<property name="logLevel" value="${AcctDtlsInquiry.logLevel}" />
+	</bean>
+
+	<beans:bean id="acctDtlsInquiryuiryService"
+		class="com.servion.ws.service.impl.AcctDtlsInquiryServiceImpl">
+		<property name="acctDtlsInquiryServiceDAO" ref="acctDtlsInquiryServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_AcctDtlsInquiry" />
+	</beans:bean>
+
+<!-- ************************** TelecomSubsciberInfo ************************************ -->
+
+
+	<bean name="marshallTelecomSubscriberInfoEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.beneficiarymanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallTelecomSubscriberInfoEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.TelecomSubscriberInfoReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.TelecomSubscriberInfoResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="telecomSubscriberInfomessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="telecomSubscriberInfofaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="telecomSubscriberInfoEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="telecomSubscriberInfomessageFactory" />
+		<property name="marshaller" ref="marshallTelecomSubscriberInfoEndpoint" />
+		<property name="unmarshaller" ref="marshallTelecomSubscriberInfoEndpoint" />
+		<property name="faultMessageResolver" ref="telecomSubscriberInfofaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${TelecomSubscriberInfo.ip.conn.time.out}" />
+				<property name="readTimeout" value="${TelecomSubscriberInfo.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${TelecomSubscriberInfo.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="telecomSubscriberInfoEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="telecomSubscriberInfomessageFactory" />
+		<property name="marshaller" ref="marshallTelecomSubscriberInfoEndpoint" />
+		<property name="unmarshaller" ref="marshallTelecomSubscriberInfoEndpoint" />
+		<property name="faultMessageResolver" ref="telecomSubscriberInfofaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${TelecomSubscriberInfo.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${TelecomSubscriberInfo.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${TelecomSubscriberInfo.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="telecomSubscriberInfoServiceDAO"
+		class="com.servion.ws.persistence.impl.TelecomSubscriberInfoServiceDAOImpl">
+		<property name="webServiceTemplate" ref="telecomSubscriberInfoEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="telecomSubscriberInfoEndpoint_2" />
+		<property name="soapActionUrl" value="${TelecomSubscriberInfo.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${TelecomSubscriberInfo.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_TelecomSubscriberInfo" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${TelecomSubscriberInfo.requesterID}" />
+		<property name="serviceName" value="${TelecomSubscriberInfo.serviceName}" />
+		<property name="providerID" value="${TelecomSubscriberInfo.providerID}" />
+		<property name="terminalID" value="${TelecomSubscriberInfo.terminalID}" />
+		<property name="serviceVersionNo" value="${TelecomSubscriberInfo.serviceVersionNo}" />
+		<property name="logLevel" value="${TelecomSubscriberInfo.logLevel}" />
+	</bean>
+
+	<beans:bean id="telecomSubscriberInfoService"
+		class="com.servion.ws.service.impl.TelecomSubscriberInfoServiceImpl">
+		<property name="telecomSubscriberInfoServiceDAO" ref="telecomSubscriberInfoServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_TelecomSubscriberInfo" />
+	</beans:bean>
+	
+	
+	<!-- ************************** TelecomPostpaidBalanceDetails ************************************ -->
+
+
+	<bean name="marshallTelecomPostpaidBalanceDetailsEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.beneficiarymanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallTelecomPostpaidBalanceDetailsEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.TelecomPostpaidBalanceDetailsReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.TelecomPostpaidBalanceDetailsResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="telecomPostpaidBalanceDetailsmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="telecomPostpaidBalanceDetailsfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="telecomPostpaidBalanceDetailsEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="telecomPostpaidBalanceDetailsmessageFactory" />
+		<property name="marshaller" ref="marshallTelecomPostpaidBalanceDetailsEndpoint" />
+		<property name="unmarshaller" ref="marshallTelecomPostpaidBalanceDetailsEndpoint" />
+		<property name="faultMessageResolver" ref="telecomPostpaidBalanceDetailsfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${TelecomPostpaidBalanceDetails.ip.conn.time.out}" />
+				<property name="readTimeout" value="${TelecomPostpaidBalanceDetails.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${TelecomPostpaidBalanceDetails.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="telecomPostpaidBalanceDetailsEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="telecomPostpaidBalanceDetailsmessageFactory" />
+		<property name="marshaller" ref="marshallTelecomPostpaidBalanceDetailsEndpoint" />
+		<property name="unmarshaller" ref="marshallTelecomPostpaidBalanceDetailsEndpoint" />
+		<property name="faultMessageResolver" ref="telecomPostpaidBalanceDetailsfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${TelecomPostpaidBalanceDetails.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${TelecomPostpaidBalanceDetails.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${TelecomPostpaidBalanceDetails.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="telecomPostpaidBalanceDetailsServiceDAO"
+		class="com.servion.ws.persistence.impl.TelecomPostpaidBalanceDetailsServiceDAOImpl">
+		<property name="webServiceTemplate" ref="telecomPostpaidBalanceDetailsEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="telecomPostpaidBalanceDetailsEndpoint_2" />
+		<property name="soapActionUrl" value="${TelecomPostpaidBalanceDetails.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${TelecomPostpaidBalanceDetails.isToCallSecHost}" />
+	</beans:bean>
+
+	<bean name="ws_RequestHeader_TelecomPostpaidBalanceDetails" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${TelecomPostpaidBalanceDetails.requesterID}" />
+		<property name="serviceName" value="${TelecomPostpaidBalanceDetails.serviceName}" />
+		<property name="providerID" value="${TelecomPostpaidBalanceDetails.providerID}" />
+		<property name="terminalID" value="${TelecomPostpaidBalanceDetails.terminalID}" />
+		<property name="serviceVersionNo" value="${TelecomPostpaidBalanceDetails.serviceVersionNo}" />
+		<property name="logLevel" value="${TelecomPostpaidBalanceDetails.logLevel}" />
+	</bean>
+
+	<beans:bean id="telecomPostpaidBalanceDetailsService"
+		class="com.servion.ws.service.impl.TelecomPostpaidBalanceDetailsServiceImpl">
+		<property name="telecomPostpaidBalanceDetailsServiceDAO" ref="telecomPostpaidBalanceDetailsServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_TelecomPostpaidBalanceDetails" />
+	</beans:bean>
+	
+<!-- ************************** UtilitySubsciberInfo ************************************ -->
+
+
+	<bean name="marshallUtilitySubscriberInfoEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.beneficiarymanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallUtilitySubscriberInfoEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.UtilitySubscriberInfoReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.UtilitySubscriberInfoResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="utilitySubscriberInfomessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="utilitySubscriberInfofaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="utilitySubscriberInfoEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="utilitySubscriberInfomessageFactory" />
+		<property name="marshaller" ref="marshallUtilitySubscriberInfoEndpoint" />
+		<property name="unmarshaller" ref="marshallUtilitySubscriberInfoEndpoint" />
+		<property name="faultMessageResolver" ref="utilitySubscriberInfofaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${UtilitySubscriberInfo.ip.conn.time.out}" />
+				<property name="readTimeout" value="${UtilitySubscriberInfo.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${UtilitySubscriberInfo.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="utilitySubscriberInfoEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="utilitySubscriberInfomessageFactory" />
+		<property name="marshaller" ref="marshallUtilitySubscriberInfoEndpoint" />
+		<property name="unmarshaller" ref="marshallUtilitySubscriberInfoEndpoint" />
+		<property name="faultMessageResolver" ref="utilitySubscriberInfofaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${UtilitySubscriberInfo.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${UtilitySubscriberInfo.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${UtilitySubscriberInfo.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="utilitySubscriberInfoServiceDAO"
+		class="com.servion.ws.persistence.impl.UtilitySubscriberInfoServiceDAOImpl">
+		<property name="webServiceTemplate" ref="utilitySubscriberInfoEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="utilitySubscriberInfoEndpoint_2" />
+		<property name="soapActionUrl" value="${UtilitySubscriberInfo.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${UtilitySubscriberInfo.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_UtilitySubscriberInfo" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${UtilitySubscriberInfo.requesterID}" />
+		<property name="serviceName" value="${UtilitySubscriberInfo.serviceName}" />
+		<property name="providerID" value="${UtilitySubscriberInfo.providerID}" />
+		<property name="terminalID" value="${UtilitySubscriberInfo.terminalID}" />
+		<property name="serviceVersionNo" value="${UtilitySubscriberInfo.serviceVersionNo}" />
+		<property name="logLevel" value="${UtilitySubscriberInfo.logLevel}" />
+	</bean>
+
+	<beans:bean id="utilitySubscriberInfoService"
+		class="com.servion.ws.service.impl.UtilitySubscriberInfoServiceImpl">
+		<property name="utilitySubscriberInfoServiceDAO" ref="utilitySubscriberInfoServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_UtilitySubscriberInfo" />
+	</beans:bean>
+	
+	
+	
+	
+	<!-- ************************** TelecomPrepaidNumberVal ************************************ -->
+
+	<bean name="marshallTelecomPrepaidNumberValEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.accountmanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallTelecomPrepaidNumberValEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.TelecomPrepaidNumberValReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.beneficiarymanagementservice.TelecomPrepaidNumberValResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="telecomPrepaidNumberValmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="telecomPrepaidNumberValfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="telecomPrepaidNumberValEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="telecomPrepaidNumberValmessageFactory" />
+		<property name="marshaller" ref="marshallTelecomPrepaidNumberValEndpoint" />
+		<property name="unmarshaller" ref="marshallTelecomPrepaidNumberValEndpoint" />
+		<property name="faultMessageResolver" ref="telecomPrepaidNumberValfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${TelecomPrepaidNumberVal.ip.conn.time.out}" />
+				<property name="readTimeout" value="${TelecomPrepaidNumberVal.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${TelecomPrepaidNumberVal.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="telecomPrepaidNumberValEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="telecomPrepaidNumberValmessageFactory" />
+		<property name="marshaller" ref="marshallTelecomPrepaidNumberValEndpoint" />
+		<property name="unmarshaller" ref="marshallTelecomPrepaidNumberValEndpoint" />
+		<property name="faultMessageResolver" ref="telecomPrepaidNumberValfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${TelecomPrepaidNumberVal.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${TelecomPrepaidNumberVal.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${TelecomPrepaidNumberVal.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="telecomPrepaidNumberValServiceDAO"
+		class="com.servion.ws.persistence.impl.TelecomPrepaidNumberValServiceDAOImpl">
+		<property name="webServiceTemplate" ref="telecomPrepaidNumberValEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="telecomPrepaidNumberValEndpoint_2" />
+		<property name="soapActionUrl" value="${TelecomPrepaidNumberVal.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${TelecomPrepaidNumberVal.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_TelecomPrepaidNumberVal" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${TelecomPrepaidNumberVal.requesterID}" />
+		<property name="serviceName" value="${TelecomPrepaidNumberVal.serviceName}" />
+		<property name="providerID" value="${TelecomPrepaidNumberVal.providerID}" />
+		<property name="terminalID" value="${TelecomPrepaidNumberVal.terminalID}" />
+		<property name="serviceVersionNo" value="${TelecomPrepaidNumberVal.serviceVersionNo}" />
+		<property name="logLevel" value="${TelecomPrepaidNumberVal.logLevel}" />
+	</bean>
+
+	<beans:bean id="telecomPrepaidNumberValService"
+		class="com.servion.ws.service.impl.TelecomPrepaidNumberValServiceImpl">
+		<property name="telecomPrepaidNumberValServiceDAO" ref="telecomPrepaidNumberValServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_TelecomPrepaidNumberVal" />
+	</beans:bean>
+	
+	
+	<!-- ************************** TelecomCustomerInfo ************************************ -->
+
+
+	<bean name="marshallTelecomCustomerInfoEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.accountmanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallTelecomCustomerInfoEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.customermgmtservice.TelecomCustomerInfoReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.customermgmtservice.TelecomCustomerInfoResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="telecomCustomerInfomessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="telecomCustomerInfofaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="telecomCustomerInfoEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="telecomCustomerInfomessageFactory" />
+		<property name="marshaller" ref="marshallTelecomCustomerInfoEndpoint" />
+		<property name="unmarshaller" ref="marshallTelecomCustomerInfoEndpoint" />
+		<property name="faultMessageResolver" ref="telecomCustomerInfofaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${TelecomCustomerInfo.ip.conn.time.out}" />
+				<property name="readTimeout" value="${TelecomCustomerInfo.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${TelecomCustomerInfo.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="telecomCustomerInfoEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="telecomCustomerInfomessageFactory" />
+		<property name="marshaller" ref="marshallTelecomCustomerInfoEndpoint" />
+		<property name="unmarshaller" ref="marshallTelecomCustomerInfoEndpoint" />
+		<property name="faultMessageResolver" ref="telecomCustomerInfofaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${TelecomCustomerInfo.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${TelecomCustomerInfo.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${TelecomCustomerInfo.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="telecomCustomerInfoServiceDAO"
+		class="com.servion.ws.persistence.impl.TelecomCustomerInfoServiceDAOImpl">
+		<property name="webServiceTemplate" ref="telecomCustomerInfoEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="telecomCustomerInfoEndpoint_2" />
+		<property name="soapActionUrl" value="${TelecomCustomerInfo.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${TelecomCustomerInfo.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_TelecomCustomerInfo" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${TelecomCustomerInfo.requesterID}" />
+		<property name="serviceName" value="${TelecomCustomerInfo.serviceName}" />
+		<property name="providerID" value="${TelecomCustomerInfo.providerID}" />
+		<property name="terminalID" value="${TelecomCustomerInfo.terminalID}" />
+		<property name="serviceVersionNo" value="${TelecomCustomerInfo.serviceVersionNo}" />
+		<property name="logLevel" value="${TelecomCustomerInfo.logLevel}" />
+	</bean>
+
+	<beans:bean id="telecomCustomerInfoDetailsService"
+		class="com.servion.ws.service.impl.TelecomCustomerInfoDetailsServiceImpl">
+		<property name="telecomCustomerInfoServiceDAO" ref="telecomCustomerInfoServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_TelecomCustomerInfo" />
+	</beans:bean>
+	
+	<!-- Update PIN -->
+	
+                <bean name="marshallUpdatePINEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+                                <property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+                </bean>
+
+
+                <oxm:jaxb2-marshaller id="marshallUpdatePINEndpoint">
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.cardmanagementservice.UpdatePINReqType" />
+
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.cardmanagementservice.UpdatePINResType" />
+                </oxm:jaxb2-marshaller>
+
+
+
+                <beans:bean id="updatePINmessageFactory"
+                                class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+                                <property name="soapVersion">
+                                                <util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+                                </property>
+                </beans:bean>
+
+                <beans:bean id="updatePINfaultResolver"
+                                class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+                <beans:bean id="updatePINEndpoint"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="updatePINmessageFactory" />
+                                <property name="marshaller" ref="marshallUpdatePINEndpoint" />
+                                <property name="unmarshaller" ref="marshallUpdatePINEndpoint" />
+                                <property name="faultMessageResolver" ref="updatePINfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${UpdatePIN.ip.conn.time.out}" />
+                                                                <property name="readTimeout" value="${UpdatePIN.ip.read.time.out}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${UpdatePIN.ip.endpoint}" />
+                </beans:bean>
+
+
+                <beans:bean id="updatePINEndpoint_2"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="updatePINmessageFactory" />
+                                <property name="marshaller" ref="marshallUpdatePINEndpoint" />
+                                <property name="unmarshaller" ref="marshallUpdatePINEndpoint" />
+                                <property name="faultMessageResolver" ref="updatePINfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${UpdatePIN.ip.conn.time.out.2}" />
+                                                                <property name="readTimeout" value="${UpdatePIN.ip.read.time.out.2}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${UpdatePIN.ip.endpoint.2}" />
+                </beans:bean>
+
+
+                <beans:bean id="updatePinServiceDAO"
+                                class="com.servion.ws.persistence.impl.UpdatePinServiceDAOImpl">
+                                <property name="webServiceTemplate" ref="updatePINEndpoint" />
+                                <property name="webServiceTemplateForSecHost" ref="updatePINEndpoint_2" />
+                                <property name="soapActionUrl" value="${UpdatePIN.ip.soap.action}" />
+                                <property name="isToCallSecHost" value="${UpdatePIN.isToCallSecHost}" />
+                </beans:bean>
+                
+                
+                <bean name="ws_RequestHeader_UpdatePIN" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+                                <property name="requesterID" value="${UpdatePIN.requesterID}" />
+                                <property name="serviceName" value="${UpdatePIN.serviceName}" />
+                                <property name="providerID" value="${UpdatePIN.providerID}" />
+                                <property name="terminalID" value="${UpdatePIN.terminalID}" />
+                                <property name="serviceVersionNo" value="${UpdatePIN.serviceVersionNo}" />
+                                <property name="logLevel" value="${UpdatePIN.logLevel}" />
+                </bean>
+
+                <beans:bean id="updatePinService"
+                                class="com.servion.ws.service.impl.UpdatePinServiceImpl">
+                                <property name="updatePinServiceDAO" ref="updatePinServiceDAO" />
+                                <property name="ws_RequestHeader" ref="ws_RequestHeader_UpdatePIN" />
+                </beans:bean>
+
+				                                <!-- ************************** FetchCardServiceHistory ************************************ -->
+
+
+                <bean name="marshallFetchCardServiceHistoryEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+                                <property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+                </bean>
+
+                <oxm:jaxb2-marshaller id="marshallFetchCardServiceHistoryEndpoint">
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.cardmanagementservice.FetchCardServiceHistoryReqType" />
+
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.cardmanagementservice.FetchCardServiceHistoryResType" />
+                </oxm:jaxb2-marshaller>
+
+
+                <beans:bean id="fetchCardServiceHistorymessageFactory"
+                                class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+                                <property name="soapVersion">
+                                                <util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+                                </property>
+                </beans:bean>
+
+                <beans:bean id="fetchCardServiceHistoryfaultResolver"
+                                class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+                <beans:bean id="fetchCardServiceHistoryEndpoint"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="fetchCardServiceHistorymessageFactory" />
+                                <property name="marshaller" ref="marshallFetchCardServiceHistoryEndpoint" />
+                                <property name="unmarshaller" ref="marshallFetchCardServiceHistoryEndpoint" />
+                                <property name="faultMessageResolver" ref="fetchCardServiceHistoryfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${FetchCardServiceHistory.ip.conn.time.out}" />
+                                                                <property name="readTimeout" value="${FetchCardServiceHistory.ip.read.time.out}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${FetchCardServiceHistory.ip.endpoint}" />
+                </beans:bean>
+
+                <beans:bean id="fetchCardServiceHistoryEndpoint_2"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="fetchCardServiceHistorymessageFactory" />
+                                <property name="marshaller" ref="marshallFetchCardServiceHistoryEndpoint" />
+                                <property name="unmarshaller" ref="marshallFetchCardServiceHistoryEndpoint" />
+                                <property name="faultMessageResolver" ref="fetchCardServiceHistoryfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${FetchCardServiceHistory.ip.conn.time.out.2}" />
+                                                                <property name="readTimeout" value="${FetchCardServiceHistory.ip.read.time.out.2}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${FetchCardServiceHistory.ip.endpoint.2}" />
+                </beans:bean>
+
+                <beans:bean id="fetchCardServiceHistoryServiceDAO"
+                                class="com.servion.ws.persistence.impl.FetchCardServiceHistoryServiceDAOImpl">
+                                <property name="webServiceTemplate" ref="fetchCardServiceHistoryEndpoint" />
+                                <property name="webServiceTemplateForSecHost" ref="fetchCardServiceHistoryEndpoint_2" />
+                                <property name="soapActionUrl" value="${FetchCardServiceHistory.ip.soap.action}" />
+                                <property name="isToCallSecHost" value="${FetchCardServiceHistory.isToCallSecHost}" />
+                </beans:bean>
+
+
+                <bean name="ws_RequestHeader_FetchCardServiceHistory" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+                                <property name="requesterID" value="${FetchCardServiceHistory.requesterID}" />
+                                <property name="serviceName" value="${FetchCardServiceHistory.serviceName}" />
+                                <property name="providerID" value="${FetchCardServiceHistory.providerID}" />
+                                <property name="terminalID" value="${FetchCardServiceHistory.terminalID}" />
+                                <property name="serviceVersionNo" value="${FetchCardServiceHistory.serviceVersionNo}" />
+                                <property name="logLevel" value="${FetchCardServiceHistory.logLevel}" />
+                </bean>
+
+                <beans:bean id="fetchCardServiceHistoryService"
+                                class="com.servion.ws.service.impl.FetchCardServiceHistoryServiceImpl">
+                                <property name="fetchCardServiceHistoryServiceDAO" ref="fetchCardServiceHistoryServiceDAO" />
+                                <property name="ws_RequestHeader" ref="ws_RequestHeader_FetchCardServiceHistory" />
+                </beans:bean>
+				
+				<!-- ************************** GetCCCustDtls ************************************ -->
+
+
+                <bean name="marshallGetCCCustDtlsEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+                                <property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+                </bean>
+
+                <oxm:jaxb2-marshaller id="marshallGetCCCustDtlsEndpoint">
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.cardmanagementservice.GetCCCustDtlsReqType" />
+
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.cardmanagementservice.GetCCCustDtlsResType" />
+                </oxm:jaxb2-marshaller>
+
+
+                <beans:bean id="getCCCustDtlsmessageFactory"
+                                class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+                                <property name="soapVersion">
+                                                <util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+                                </property>
+                </beans:bean>
+
+                <beans:bean id="getCCCustDtlsfaultResolver"
+                                class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+                <beans:bean id="getCCCustDtlsEndpoint"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="getCCCustDtlsmessageFactory" />
+                                <property name="marshaller" ref="marshallGetCCCustDtlsEndpoint" />
+                                <property name="unmarshaller" ref="marshallGetCCCustDtlsEndpoint" />
+                                <property name="faultMessageResolver" ref="getCCCustDtlsfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${GetCCCustDtls.ip.conn.time.out}" />
+                                                                <property name="readTimeout" value="${GetCCCustDtls.ip.read.time.out}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${GetCCCustDtls.ip.endpoint}" />
+                </beans:bean>
+
+                <beans:bean id="getCCCustDtlsEndpoint_2"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="getCCCustDtlsmessageFactory" />
+                                <property name="marshaller" ref="marshallGetCCCustDtlsEndpoint" />
+                                <property name="unmarshaller" ref="marshallGetCCCustDtlsEndpoint" />
+                                <property name="faultMessageResolver" ref="getCCCustDtlsfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${GetCCCustDtls.ip.conn.time.out.2}" />
+                                                                <property name="readTimeout" value="${GetCCCustDtls.ip.read.time.out.2}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${GetCCCustDtls.ip.endpoint.2}" />
+                </beans:bean>
+
+                <beans:bean id="getCCCustDtlsServiceDAO"
+                                class="com.servion.ws.persistence.impl.GetCCCustDtlsServiceDAOImpl">
+                                <property name="webServiceTemplate" ref="getCCCustDtlsEndpoint" />
+                                <property name="webServiceTemplateForSecHost" ref="getCCCustDtlsEndpoint_2" />
+                                <property name="soapActionUrl" value="${GetCCCustDtls.ip.soap.action}" />
+                                <property name="isToCallSecHost" value="${GetCCCustDtls.isToCallSecHost}" />
+                </beans:bean>
+
+
+                <bean name="ws_RequestHeader_GetCCCustDtls" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+                                <property name="requesterID" value="${GetCCCustDtls.requesterID}" />
+                                <property name="serviceName" value="${GetCCCustDtls.serviceName}" />
+                                <property name="providerID" value="${GetCCCustDtls.providerID}" />
+                                <property name="terminalID" value="${GetCCCustDtls.terminalID}" />
+                                <property name="serviceVersionNo" value="${GetCCCustDtls.serviceVersionNo}" />
+                                <property name="logLevel" value="${GetCCCustDtls.logLevel}" />
+                </bean>
+
+                <beans:bean id="getCCCustDtlsService"
+                                class="com.servion.ws.service.impl.GetCCCustDtlsServiceImpl">
+                                <property name="getCCCustDtlsServiceDAO" ref="getCCCustDtlsServiceDAO" />
+                                <property name="ws_RequestHeader" ref="ws_RequestHeader_GetCCCustDtls" />
+                </beans:bean>
+				
+	<!-- ************************** GetDCCustDtls ************************************ -->
+
+
+                <bean name="marshallGetDCCustDtlsEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+                                <property name="contextPaths" value="com.bankmuscat.esb.cardmanagementservice" />
+                </bean>
+
+                <oxm:jaxb2-marshaller id="marshallGetDCCustDtlsEndpoint">
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.cardmanagementservice.GetDCCustDtlsReqType" />
+
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.cardmanagementservice.GetDCCustDtlsResType" />
+                </oxm:jaxb2-marshaller>
+
+
+                <beans:bean id="getDCCustDtlsmessageFactory"
+                                class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+                                <property name="soapVersion">
+                                                <util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+                                </property>
+                </beans:bean>
+
+                <beans:bean id="getDCCustDtlsfaultResolver"
+                                class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+                <beans:bean id="getDCCustDtlsEndpoint"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="getDCCustDtlsmessageFactory" />
+                                <property name="marshaller" ref="marshallGetDCCustDtlsEndpoint" />
+                                <property name="unmarshaller" ref="marshallGetDCCustDtlsEndpoint" />
+                                <property name="faultMessageResolver" ref="getDCCustDtlsfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${GetDCCustDtls.ip.conn.time.out}" />
+                                                                <property name="readTimeout" value="${GetDCCustDtls.ip.read.time.out}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${GetDCCustDtls.ip.endpoint}" />
+                </beans:bean>
+
+                <beans:bean id="getDCCustDtlsEndpoint_2"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="getDCCustDtlsmessageFactory" />
+                                <property name="marshaller" ref="marshallGetDCCustDtlsEndpoint" />
+                                <property name="unmarshaller" ref="marshallGetDCCustDtlsEndpoint" />
+                                <property name="faultMessageResolver" ref="getDCCustDtlsfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${GetDCCustDtls.ip.conn.time.out.2}" />
+                                                                <property name="readTimeout" value="${GetDCCustDtls.ip.read.time.out.2}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${GetDCCustDtls.ip.endpoint.2}" />
+                </beans:bean>
+
+                <beans:bean id="getDCCustDtlsServiceDAO"
+                                class="com.servion.ws.persistence.impl.GetDCCustDtlsServiceDAOImpl">
+                                <property name="webServiceTemplate" ref="getDCCustDtlsEndpoint" />
+                                <property name="webServiceTemplateForSecHost" ref="getDCCustDtlsEndpoint_2" />
+                                <property name="soapActionUrl" value="${GetDCCustDtls.ip.soap.action}" />
+                                <property name="isToCallSecHost" value="${GetDCCustDtls.isToCallSecHost}" />
+                </beans:bean>
+
+
+                <bean name="ws_RequestHeader_GetDCCustDtls" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+                                <property name="requesterID" value="${GetDCCustDtls.requesterID}" />
+                                <property name="serviceName" value="${GetDCCustDtls.serviceName}" />
+                                <property name="providerID" value="${GetDCCustDtls.providerID}" />
+                                <property name="terminalID" value="${GetDCCustDtls.terminalID}" />
+                                <property name="serviceVersionNo" value="${GetDCCustDtls.serviceVersionNo}" />
+                                <property name="logLevel" value="${GetDCCustDtls.logLevel}" />
+                </bean>
+
+                <beans:bean id="getDCCustDtlsService"
+                                class="com.servion.ws.service.impl.GetDCCustDtlsServiceImpl">
+                                <property name="getDCCustDtlsServiceDAO" ref="getDCCustDtlsServiceDAO" />
+                                <property name="ws_RequestHeader" ref="ws_RequestHeader_GetDCCustDtls" />
+                </beans:bean>
+				
+				
+				<!-- ************************** FetchCaseListOrCount ************************************ -->
+
+
+	<bean name="marshallFetchCaseListOrCountEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.feedbackmanagementservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallFetchCaseListOrCountEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.feedbackmanagementservice.FetchCaseListOrCountReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.feedbackmanagementservice.FetchCaseListOrCountResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="fetchCaseListOrCountmessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="fetchCaseListOrCountfaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="fetchCaseListOrCountEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="fetchCaseListOrCountmessageFactory" />
+		<property name="marshaller" ref="marshallFetchCaseListOrCountEndpoint" />
+		<property name="unmarshaller" ref="marshallFetchCaseListOrCountEndpoint" />
+		<property name="faultMessageResolver" ref="fetchCaseListOrCountfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${FetchCaseListOrCount.ip.conn.time.out}" />
+				<property name="readTimeout" value="${FetchCaseListOrCount.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${FetchCaseListOrCount.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="fetchCaseListOrCountEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="fetchCaseListOrCountmessageFactory" />
+		<property name="marshaller" ref="marshallFetchCaseListOrCountEndpoint" />
+		<property name="unmarshaller" ref="marshallFetchCaseListOrCountEndpoint" />
+		<property name="faultMessageResolver" ref="fetchCaseListOrCountfaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${FetchCaseListOrCount.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${FetchCaseListOrCount.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${FetchCaseListOrCount.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="fetchCaseListOrCountServiceDAO"
+		class="com.servion.ws.persistence.impl.FetchCaseListOrCountServiceDAOImpl">
+		<property name="webServiceTemplate" ref="fetchCaseListOrCountEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="fetchCaseListOrCountEndpoint_2" />
+		<property name="soapActionUrl" value="${FetchCaseListOrCount.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${FetchCaseListOrCount.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_FetchCaseListOrCount" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${FetchCaseListOrCount.requesterID}" />
+		<property name="serviceName" value="${FetchCaseListOrCount.serviceName}" />
+		<property name="providerID" value="${FetchCaseListOrCount.providerID}" />
+		<property name="terminalID" value="${FetchCaseListOrCount.terminalID}" />
+		<property name="serviceVersionNo" value="${FetchCaseListOrCount.serviceVersionNo}" />
+		<property name="logLevel" value="${FetchCaseListOrCount.logLevel}" />
+	</bean>
+
+	<beans:bean id="fetchCaseListOrCountService"
+		class="com.servion.ws.service.impl.FetchCaseListOrCountServiceImpl">
+		<property name="fetchCaseListOrCountServiceDAO" ref="fetchCaseListOrCountServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_FetchCaseListOrCount" />
+	</beans:bean>
+	
+	<!-- Added on July 28 2020 for EPIN registred mobile number ISD testing -->
+	<!-- ************************** CustDtls ************************************ -->
+
+
+                <bean name="marshallCustDtlsEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+                                <property name="contextPaths" value="com.bankmuscat.esb.customermgmtservice" />
+                </bean>
+
+                <oxm:jaxb2-marshaller id="marshallCustDtlsEndpoint">
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.customermgmtservice.CustDtlsReqType" />
+
+                                <oxm:class-to-be-bound
+                                                name="com.bankmuscat.esb.customermgmtservice.CustDtlsResType" />
+                </oxm:jaxb2-marshaller>
+
+
+                <beans:bean id="custDtlsmessageFactory"
+                                class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+                                <property name="soapVersion">
+                                                <util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+                                </property>
+                </beans:bean>
+
+                <beans:bean id="custDtlsfaultResolver"
+                                class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+                <beans:bean id="custDtlsEndpoint"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="custDtlsmessageFactory" />
+                                <property name="marshaller" ref="marshallCustDtlsEndpoint" />
+                                <property name="unmarshaller" ref="marshallCustDtlsEndpoint" />
+                                <property name="faultMessageResolver" ref="custDtlsfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${CustDtls.ip.conn.time.out}" />
+                                                                <property name="readTimeout" value="${CustDtls.ip.read.time.out}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${CustDtls.ip.endpoint}" />
+                </beans:bean>
+
+                <beans:bean id="custDtlsEndpoint_2"
+                                class="org.springframework.ws.client.core.WebServiceTemplate">
+                                <constructor-arg ref="custDtlsmessageFactory" />
+                                <property name="marshaller" ref="marshallCustDtlsEndpoint" />
+                                <property name="unmarshaller" ref="marshallCustDtlsEndpoint" />
+                                <property name="faultMessageResolver" ref="custDtlsfaultResolver" />
+                                <property name="messageSender">
+                                                <bean
+                                                                class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+                                                                <property name="connectionTimeout" value="${CustDtls.ip.conn.time.out.2}" />
+                                                                <property name="readTimeout" value="${CustDtls.ip.read.time.out.2}"></property>
+                                                </bean>
+                                </property>
+                                <property name="defaultUri" value="${CustDtls.ip.endpoint.2}" />
+                </beans:bean>
+
+                <beans:bean id="custDtlsServiceDAO"
+                                class="com.servion.ws.persistence.impl.CustDtlsServiceDAOImpl">
+                                <property name="webServiceTemplate" ref="custDtlsEndpoint" />
+                                <property name="webServiceTemplateForSecHost" ref="custDtlsEndpoint_2" />
+                                <property name="soapActionUrl" value="${CustDtls.ip.soap.action}" />
+                                <property name="isToCallSecHost" value="${CustDtls.isToCallSecHost}" />
+                </beans:bean>
+
+
+                <bean name="ws_RequestHeader_CustDtls" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+                                <property name="requesterID" value="${CustDtls.requesterID}" />
+                                <property name="serviceName" value="${CustDtls.serviceName}" />
+                                <property name="providerID" value="${CustDtls.providerID}" />
+                                <property name="terminalID" value="${CustDtls.terminalID}" />
+                                <property name="serviceVersionNo" value="${CustDtls.serviceVersionNo}" />
+                                <property name="logLevel" value="${CustDtls.logLevel}" />
+                </bean>
+
+                <beans:bean id="custDtlsService"
+                                class="com.servion.ws.service.impl.CustDtlsServiceImpl">
+                                <property name="custDtlsServiceDAO" ref="custDtlsServiceDAO" />
+                                <property name="ws_RequestHeader" ref="ws_RequestHeader_CustDtls" />
+                </beans:bean>
+				
+				<!-- ************************** CustomerShortUpdate ************************************ -->
+
+
+	<bean name="marshallCustomerShortUpdateEndpoint1" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPaths" value="com.bankmuscat.esb.customermgmtservice" />
+	</bean>
+
+	<oxm:jaxb2-marshaller id="marshallCustomerShortUpdateEndpoint">
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.customermgmtservice.CustomerShortupdateReqType" />
+
+		<oxm:class-to-be-bound
+			name="com.bankmuscat.esb.customermgmtservice.CustomerShortupdateResType" />
+	</oxm:jaxb2-marshaller>
+
+
+	<beans:bean id="customerShortUpdatemessageFactory"
+		class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+		<property name="soapVersion">
+			<util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_11" />
+		</property>
+	</beans:bean>
+
+	<beans:bean id="customerShortUpdatefaultResolver"
+		class="org.springframework.ws.soap.client.core.SoapFaultMessageResolver" />
+
+
+	<beans:bean id="customerShortUpdateEndpoint"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="customerShortUpdatemessageFactory" />
+		<property name="marshaller" ref="marshallCustomerShortUpdateEndpoint" />
+		<property name="unmarshaller" ref="marshallCustomerShortUpdateEndpoint" />
+		<property name="faultMessageResolver" ref="customerShortUpdatefaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CustomerShortUpdate.ip.conn.time.out}" />
+				<property name="readTimeout" value="${CustomerShortUpdate.ip.read.time.out}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CustomerShortUpdate.ip.endpoint}" />
+	</beans:bean>
+
+	<beans:bean id="customerShortUpdateEndpoint_2"
+		class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="customerShortUpdatemessageFactory" />
+		<property name="marshaller" ref="marshallCustomerShortUpdateEndpoint" />
+		<property name="unmarshaller" ref="marshallCustomerShortUpdateEndpoint" />
+		<property name="faultMessageResolver" ref="customerShortUpdatefaultResolver" />
+		<property name="messageSender">
+			<bean
+				class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+				<property name="connectionTimeout" value="${CustomerShortUpdate.ip.conn.time.out.2}" />
+				<property name="readTimeout" value="${CustomerShortUpdate.ip.read.time.out.2}"></property>
+			</bean>
+		</property>
+		<property name="defaultUri" value="${CustomerShortUpdate.ip.endpoint.2}" />
+	</beans:bean>
+
+	<beans:bean id="customerShortUpdateServiceDAO"
+		class="com.servion.ws.persistence.impl.CustomerShortUpdateServiceDAOImpl">
+		<property name="webServiceTemplate" ref="customerShortUpdateEndpoint" />
+		<property name="webServiceTemplateForSecHost" ref="customerShortUpdateEndpoint_2" />
+		<property name="soapActionUrl" value="${CustomerShortUpdate.ip.soap.action}" />
+		<property name="isToCallSecHost" value="${CustomerShortUpdate.isToCallSecHost}" />
+	</beans:bean>
+
+
+	<bean name="ws_RequestHeader_CustomerShortUpdate" class="com.servion.ws.header.impl.WS_RequestHeaderImpl" scope="prototype">
+		<property name="requesterID" value="${CustomerShortUpdate.requesterID}" />
+		<property name="serviceName" value="${CustomerShortUpdate.serviceName}" />
+		<property name="providerID" value="${CustomerShortUpdate.providerID}" />
+		<property name="terminalID" value="${CustomerShortUpdate.terminalID}" />
+		<property name="serviceVersionNo" value="${CustomerShortUpdate.serviceVersionNo}" />
+		<property name="logLevel" value="${CustomerShortUpdate.logLevel}" />
+	</bean>
+
+	<beans:bean id="customerShortUpdateService"
+		class="com.servion.ws.service.impl.CustomerShortUpdateServiceImpl">
+		<property name="customerShortUpdateServiceDAO" ref="customerShortUpdateServiceDAO" />
+		<property name="ws_RequestHeader" ref="ws_RequestHeader_CustomerShortUpdate" />
+	</beans:bean>
+</beans>
